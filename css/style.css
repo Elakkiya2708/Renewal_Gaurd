@@ -2584,22 +2584,332 @@ table.data-table tbody tr:hover {
 }
 
 @media print {
+  /* 1. Page margin and dimensions */
+  @page {
+    margin: 12mm 14mm 14mm 14mm;
+    size: auto;
+  }
+
+  /* 2. Color adjustments & theme reset for crisp print contrast */
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+  }
+
+  :root,
+  body,
+  body.theme-indigo-dark,
+  body.theme-gold,
+  body.theme-gold-light {
+    --bg-app: #ffffff !important;
+    --bg-surface: #ffffff !important;
+    --bg-surface-2: #f8fafc !important;
+    --text: #0f172a !important;
+    --text-hi: #0f172a !important;
+    --text-mid: #334155 !important;
+    --text-low: #64748b !important;
+    --border: #e2e8f0 !important;
+    --border-strong: #cbd5e1 !important;
+    --accent: #4f46e5 !important;
+    --accent-dim: rgba(79, 70, 229, 0.12) !important;
+    --success: #16a34a !important;
+    --warning: #d97706 !important;
+    --danger: #dc2626 !important;
+    color-scheme: light !important;
+  }
+
+  /* 3. Collapse flex and 100vh height on containers to prevent massive blank gaps */
+  html,
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 10pt !important;
+    line-height: 1.35 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .app-shell,
+  .main-area,
+  .content {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    position: static !important;
+  }
+
+  /* 4. Hide all interactive and non-printable elements */
   .sidebar,
+  .sidebar-overlay,
+  .sidebar-brand,
   .topbar,
   .page-header-actions,
-  .no-print {
+  .forecast-tabs,
+  .no-print,
+  button,
+  .btn,
+  .modal,
+  .dropdown-panel,
+  .toast,
+  .cmd-palette-overlay {
     display: none !important;
   }
-  .main-area {
-    margin-left: 0 !important;
+
+  /* 5. Typography */
+  h1, h2, h3, h4, h5, h6, strong, b {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    page-break-after: avoid;
+    break-after: avoid;
   }
-  body {
-    background: #fff;
-    color: #000;
+
+  p, span, div, td, th {
+    color: #1e293b;
   }
+
+  a {
+    color: #0f172a !important;
+    text-decoration: none !important;
+  }
+
+  .text-mid {
+    color: #475569 !important;
+  }
+
+  /* 6. Page header */
+  .page-header {
+    margin-bottom: 12px !important;
+    padding-bottom: 8px !important;
+    border-bottom: 2px solid #0f172a !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+  }
+
+  .page-header h1 {
+    font-size: 16pt !important;
+    margin: 0 0 2px 0 !important;
+  }
+
+  .page-header p {
+    font-size: 9pt !important;
+    color: #475569 !important;
+    margin: 0 !important;
+  }
+
+  .print-only-header {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding-bottom: 10px !important;
+    margin-bottom: 12px !important;
+    border-bottom: 2px solid #0f172a !important;
+  }
+
+  .print-meta-badge {
+    font-size: 8.5pt !important;
+    color: #475569 !important;
+  }
+
+  /* 7. Cards - Allow page break between cards and avoid breaking inside small cards */
   .card {
-    border: 1px solid #ccc;
-    break-inside: avoid;
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    padding: 12px 14px !important;
+    margin-bottom: 12px !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+    box-shadow: none !important;
+  }
+
+  .card-header {
+    margin-bottom: 8px !important;
+    padding-bottom: 5px !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+
+  .card-header h3 {
+    font-size: 11pt !important;
+    margin: 0 !important;
+  }
+
+  /* 8. Stat Grid: 4-up on print */
+  .stat-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 10px !important;
+    margin: 10px 0 !important;
+  }
+
+  .stat-card {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 6px !important;
+    padding: 8px 10px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+
+  .stat-card .stat-top {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .stat-card .stat-icon {
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    border-radius: 4px !important;
+  }
+
+  .stat-card .stat-value {
+    font-size: 13.5pt !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    line-height: 1.1 !important;
+  }
+
+  .stat-card .stat-label {
+    font-size: 8pt !important;
+    color: #475569 !important;
+    font-weight: 600 !important;
+    margin-top: 2px !important;
+  }
+
+  /* 9. Report Grids (2 columns) */
+  .report-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 14px !important;
+    margin-top: 8px !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  /* 10. Forecast progress bars */
+  .forecast-cat-row {
+    margin-bottom: 6px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .forecast-cat-meta {
+    display: flex !important;
+    justify-content: space-between !important;
+    font-size: 9pt !important;
+    margin-bottom: 2px !important;
+  }
+
+  .forecast-bar-track {
+    background: #e2e8f0 !important;
+    height: 7px !important;
+    border-radius: 3px !important;
+    overflow: hidden !important;
+  }
+
+  .forecast-bar-fill {
+    background: #4f46e5 !important;
+    height: 100% !important;
+  }
+
+  /* 11. Summary Rows */
+  .summary-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 5px 0 !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    font-size: 9pt !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .summary-row .cell-sub {
+    font-size: 8pt !important;
+    color: #64748b !important;
+  }
+
+  .summary-row .count {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+  }
+
+  /* 12. Monthly Trend Chart */
+  .bar-chart {
+    display: flex !important;
+    align-items: flex-end !important;
+    gap: 6px !important;
+    height: 120px !important;
+    padding: 6px 0 !important;
+    border-bottom: 1px solid #cbd5e1 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .bar-chart-col {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    height: 100% !important;
+    justify-content: flex-end !important;
+  }
+
+  .bar-chart-bar {
+    width: 100% !important;
+    max-width: 20px !important;
+    background: #4f46e5 !important;
+    border-radius: 2px 2px 0 0 !important;
+  }
+
+  .bar-chart-label {
+    font-size: 7pt !important;
+    color: #475569 !important;
+    margin-top: 3px !important;
+  }
+
+  /* 13. Status & Priority Badges */
+  .badge {
+    border: 1px solid #cbd5e1 !important;
+    padding: 1px 5px !important;
+    border-radius: 3px !important;
+    font-size: 7.5pt !important;
+    font-weight: 600 !important;
+    display: inline-block !important;
+  }
+
+  .badge-active {
+    background: #dcfce7 !important;
+    color: #166534 !important;
+  }
+
+  .badge-expired {
+    background: #fee2e2 !important;
+    color: #991b1b !important;
+  }
+
+  .badge-due-soon {
+    background: #fef3c7 !important;
+    color: #92400e !important;
   }
 }
 

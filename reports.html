@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <link rel="icon" type="image/png" href="assets/favicon.png" data-img-indigo="assets/favicon.png" data-img-gold="assets/favicon-gold.png" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Reports — Renewal Tracking System</title>
+<title>Reports — RenewGaurd</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/style.css" />
@@ -29,7 +29,7 @@
       <a href="reminders.html" class="nav-link"><i data-lucide="bell" class="icon"></i>Reminders</a>
       <a href="history.html" class="nav-link"><i data-lucide="history" class="icon"></i>Renewal History</a>
       <a href="documents.html" class="nav-link"><i data-lucide="folder" class="icon"></i>Documents</a>
-      <a href="reports.html" class="nav-link"><i data-lucide="bar-chart-2" class="icon"></i>Reports</a>
+      <a href="reports.html" class="nav-link active"><i data-lucide="bar-chart-2" class="icon"></i>Reports</a>
 
 
 
@@ -70,6 +70,18 @@
     </header>
 
     <main class="content">
+      <!-- Print-Only Executive Header -->
+      <div class="print-only-header" style="display:none;">
+        <div>
+          <div style="font-size:16pt;font-weight:800;color:#0f172a;letter-spacing:-0.5px;">RenewGaurd</div>
+          <div style="font-size:9pt;color:#64748b;">Executive Renewal &amp; Expenditure Report</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="print-meta-badge" id="printReportDate">October 22, 2026</div>
+          <div class="print-meta-badge" id="printReportHorizon">Forecast Window: Next 90 Days</div>
+        </div>
+      </div>
+
       <div class="page-header">
         <div>
           <h1>Reports</h1>

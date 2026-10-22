@@ -35,6 +35,22 @@
     if (highEl) highEl.textContent = RTS.formatCurrency(highPrioritySpend, preferredCurrency);
     if (avgEl) avgEl.textContent = RTS.formatCurrency(avgSpend, preferredCurrency);
 
+    // Update print-only header metadata
+    const printDateEl = document.getElementById("printReportDate");
+    const printHorizonEl = document.getElementById("printReportHorizon");
+    if (printDateEl) {
+      printDateEl.textContent = "Generated: " + new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+    }
+    if (printHorizonEl) {
+      const horizonLabels = {
+        30: "Forecast Window: Next 30 Days",
+        90: "Forecast Window: Next 90 Days",
+        365: "Forecast Window: Next 365 Days (1 Year)",
+        9999: "Forecast Window: All Upcoming Renewals",
+      };
+      printHorizonEl.textContent = horizonLabels[horizonDays] || `Forecast Window: Next ${horizonDays} Days`;
+    }
+
     // Category breakdown
     const categoryTotals = {};
     upcoming.forEach((r) => {
