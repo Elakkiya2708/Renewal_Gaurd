@@ -264,38 +264,138 @@
           <!-- AI SmartDoc Scanner -->
           <div class="settings-panel card" id="panel-smartdoc">
             <div class="card-header">
-              <h3><i data-lucide="sparkles" class="icon" style="color:var(--accent);"></i> AI SmartDoc Scanner</h3>
-              <p style="font-size:12.5px;color:var(--text-mid);margin:4px 0 0;">Upload any contract, warranty, or certificate. AI SmartDoc extracts vendor, expiry date, and cost automatically.</p>
+              <h3><i data-lucide="sparkles" class="icon" style="color:var(--accent);"></i> AI SmartDoc Certificate &amp; Contract Scanner</h3>
+              <p style="font-size:12.5px;color:var(--text-mid);margin:4px 0 0;">Upload any certificate, warranty, license or policy. AI extracts the title, vendor, and <strong>exact renewal date</strong> automatically.</p>
             </div>
 
-            <div class="upload-dropzone" id="smartDocDropzone" style="margin-top:14px;">
-              <i data-lucide="file-text" class="dropzone-icon" style="width:40px;height:40px;color:var(--accent);"></i>
+            <!-- Upload Dropzone -->
+            <div class="upload-dropzone" id="smartDocDropzone" style="margin-top:14px;position:relative;">
+              <i data-lucide="file-text" class="dropzone-icon" style="width:42px;height:42px;color:var(--accent);margin:0 auto 8px;"></i>
               <div class="dropzone-text">
-                <strong style="display:block;margin-bottom:4px;">Upload contract or certificate for AI analysis</strong>
-                <span style="font-size:12px;color:var(--text-low);">Supports PDF, PNG, JPG scans up to 15MB</span>
+                <strong style="display:block;font-size:15px;margin-bottom:4px;color:var(--text-hi);">Upload contract or certificate for AI analysis</strong>
+                <span style="font-size:12.5px;color:var(--text-mid);">Drag &amp; drop PDF, PNG, JPG, or WEBP scans up to 15MB</span>
               </div>
-              <input type="file" id="smartDocFileInput" accept=".pdf,.png,.jpg,.jpeg" style="display:none;" />
-              <button type="button" class="btn btn-secondary btn-sm" id="testAiScanBtn" style="margin-top:12px;">
-                <i data-lucide="play" class="icon"></i> Test Sample Contract Extraction
-              </button>
+              <input type="file" id="smartDocFileInput" accept=".pdf,.png,.jpg,.jpeg,.webp,.txt" style="display:none;" />
+              
+              <div style="margin-top:16px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;" onclick="event.stopPropagation();">
+                <span style="font-size:12px;color:var(--text-low);align-self:center;margin-right:4px;">Quick Test Samples:</span>
+                <button type="button" class="btn btn-secondary btn-xs" id="sampleAwsBtn">
+                  <i data-lucide="award" class="icon"></i> AWS Certificate
+                </button>
+                <button type="button" class="btn btn-secondary btn-xs" id="sampleInsuranceBtn">
+                  <i data-lucide="shield-check" class="icon"></i> Vehicle Insurance
+                </button>
+                <button type="button" class="btn btn-secondary btn-xs" id="sampleLicenseBtn">
+                  <i data-lucide="briefcase" class="icon"></i> Trade License
+                </button>
+              </div>
             </div>
 
-            <div id="aiScanResult" style="display:none;margin-top:20px;padding:16px;background:var(--bg-surface-2);border-radius:var(--r-md);border:1px solid var(--border);">
-              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-                <strong style="color:var(--text-hi);font-size:14px;display:flex;align-items:center;gap:6px;">
-                  <i data-lucide="check-circle-2" class="icon" style="color:var(--success);"></i> AI SmartDoc Extraction Successful
-                </strong>
-                <span class="badge badge-active">98.4% Confidence</span>
+            <!-- Scanning Progress Indicator -->
+            <div id="smartDocScanningStatus" style="display:none;margin-top:16px;padding:20px;background:var(--bg-surface-2);border-radius:var(--r-md);border:1px solid var(--accent);text-align:center;">
+              <div style="display:inline-flex;align-items:center;gap:10px;font-weight:600;color:var(--accent);font-size:14px;margin-bottom:8px;">
+                <i data-lucide="loader-2" class="icon icon-spin" style="width:20px;height:20px;"></i>
+                <span id="smartDocStatusText">AI SmartDoc: Scanning certificate text &amp; renewal dates...</span>
               </div>
-              <div class="info-grid" style="grid-template-columns:repeat(2,1fr);gap:12px;">
-                <div class="info-item"><span>Detected Title</span><strong id="aiTitle">Cloudflare Enterprise SLA Agreement</strong></div>
-                <div class="info-item"><span>Detected Expiry Date</span><strong id="aiExpiry" style="color:var(--accent);">2027-09-30</strong></div>
-                <div class="info-item"><span>Detected Provider</span><strong id="aiOrg">Cloudflare, Inc.</strong></div>
-                <div class="info-item"><span>Detected Value / Cost</span><strong id="aiCost">$24,000.00 USD</strong></div>
+              <div style="background:var(--border);border-radius:999px;height:6px;width:100%;max-width:320px;margin:8px auto;overflow:hidden;">
+                <div id="smartDocProgressBar" style="background:var(--accent);height:100%;width:35%;border-radius:999px;transition:width 0.3s ease;"></div>
               </div>
-              <div style="margin-top:14px;display:flex;gap:10px;">
-                <button type="button" class="btn btn-primary btn-sm" id="saveAiRecordBtn">
-                  <i data-lucide="plus" class="icon"></i> Save as Tracked Renewal Record
+            </div>
+
+            <!-- Extracted Results Card -->
+            <div id="aiScanResult" style="display:none;margin-top:20px;padding:20px;background:var(--bg-surface-2);border-radius:var(--r-md);border:1px solid var(--border);">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;">
+                <div>
+                  <strong style="color:var(--text-hi);font-size:15px;display:flex;align-items:center;gap:6px;">
+                    <i data-lucide="check-circle-2" class="icon" style="color:var(--success);"></i> AI Certificate Extraction Complete
+                  </strong>
+                  <span id="aiFileNameDisplay" style="font-size:12px;color:var(--text-mid);display:block;margin-top:2px;"></span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center;">
+                  <span class="badge badge-active" id="aiConfidenceBadge">98.4% Confidence</span>
+                </div>
+              </div>
+
+              <!-- High-Visibility Renewal / Expiry Date Callout -->
+              <div style="background:var(--bg-surface);border:2px solid var(--accent);border-radius:var(--r-md);padding:14px 16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(79,70,229,0.08);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px;">
+                  <label for="aiExpiry" style="font-weight:700;font-size:13.5px;color:var(--accent);display:flex;align-items:center;gap:6px;margin:0;">
+                    <i data-lucide="calendar" class="icon"></i> Detected Renewal / Expiry Date
+                  </label>
+                  <span id="aiExpiryRelative" class="badge badge-active" style="font-size:11.5px;"></span>
+                </div>
+                <input class="input" type="date" id="aiExpiry" style="font-size:16px;font-weight:700;color:var(--accent);max-width:240px;background:var(--bg-surface);" />
+                <span style="display:block;font-size:11.5px;color:var(--text-low);margin-top:4px;">This date has been automatically detected from your certificate. You can edit it if needed.</span>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="aiTitle">Certificate / Document Title <span class="req">*</span></label>
+                  <input class="input" id="aiTitle" placeholder="e.g. AWS Certified Solutions Architect" />
+                </div>
+                <div class="field">
+                  <label for="aiOrg">Issuing Authority / Provider <span class="req">*</span></label>
+                  <input class="input" id="aiOrg" placeholder="e.g. Amazon Web Services" />
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="aiRef">Certificate / Policy Number</label>
+                  <input class="input" id="aiRef" placeholder="e.g. AWS0392817492 or POL-2024-001" />
+                </div>
+                <div class="field">
+                  <label for="aiCategory">Category</label>
+                  <select class="input" id="aiCategory">
+                    <option value="Certification">Certification</option>
+                    <option value="License">License</option>
+                    <option value="Insurance">Insurance</option>
+                    <option value="Security">Security &amp; SSL</option>
+                    <option value="Vehicle">Vehicle &amp; Transport</option>
+                    <option value="Warranty">Warranty</option>
+                    <option value="Contract">Contract / SLA</option>
+                    <option value="Subscription">Subscription</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field-row">
+                <div class="field">
+                  <label for="aiIssueDate">Issue Date / Valid From</label>
+                  <input class="input" type="date" id="aiIssueDate" />
+                </div>
+                <div class="field">
+                  <label for="aiCost">Renewal Cost / Fee</label>
+                  <input class="input" type="number" step="0.01" min="0" id="aiCost" placeholder="0.00" />
+                </div>
+                <div class="field">
+                  <label for="aiCycle">Renewal Cycle</label>
+                  <select class="input" id="aiCycle">
+                    <option value="Yearly">Yearly</option>
+                    <option value="2 Years">Every 2 Years</option>
+                    <option value="3 Years">Every 3 Years</option>
+                    <option value="Monthly">Monthly</option>
+                    <option value="Quarterly">Quarterly</option>
+                    <option value="One-time">One-time</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Collapsible Raw Text Verification -->
+              <div style="margin:12px 0;">
+                <button type="button" class="btn btn-ghost btn-xs" id="toggleAiRawBtn" style="padding:4px 8px;font-size:11.5px;color:var(--text-mid);">
+                  <i data-lucide="file-code" class="icon"></i> View Extracted Text Snippet
+                </button>
+                <div id="aiRawSnippetContainer" style="display:none;margin-top:8px;padding:10px 12px;background:var(--bg-app);border:1px solid var(--border);border-radius:6px;font-family:monospace;font-size:11.5px;max-height:130px;overflow-y:auto;white-space:pre-wrap;color:var(--text-mid);"></div>
+              </div>
+
+              <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                <button type="button" class="btn btn-primary" id="saveAiRecordBtn">
+                  <i data-lucide="plus-circle" class="icon"></i> Save as Tracked Renewal Record
+                </button>
+                <button type="button" class="btn btn-secondary" id="resetAiScanBtn">
+                  <i data-lucide="refresh-cw" class="icon"></i> Scan Another Certificate
                 </button>
               </div>
             </div>
@@ -339,6 +439,14 @@
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+  if (window.pdfjsLib) {
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="js/smartdoc.js"></script>
 <script src="js/settings.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>RTS.refreshIcons();</script>

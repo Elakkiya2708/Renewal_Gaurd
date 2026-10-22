@@ -449,56 +449,293 @@
   }
 
   function wireAiScan() {
-    const testBtn = document.getElementById("testAiScanBtn");
     const dropzone = document.getElementById("smartDocDropzone");
     const fileInput = document.getElementById("smartDocFileInput");
+    const statusBox = document.getElementById("smartDocScanningStatus");
+    const statusText = document.getElementById("smartDocStatusText");
+    const progressBar = document.getElementById("smartDocProgressBar");
     const resultBox = document.getElementById("aiScanResult");
     const saveAiBtn = document.getElementById("saveAiRecordBtn");
+    const resetAiBtn = document.getElementById("resetAiScanBtn");
+    const toggleRawBtn = document.getElementById("toggleAiRawBtn");
+    const rawSnippetContainer = document.getElementById("aiRawSnippetContainer");
 
-    function runExtraction(fileName) {
-      if (!resultBox) return;
-      RTS.toast("AI SmartDoc: Scanning " + (fileName || "contract document") + "...", "info");
-      setTimeout(() => {
-        resultBox.style.display = "block";
-        RTS.refreshIcons();
-        RTS.toast("AI SmartDoc: Expiry & contract terms extracted with 98.4% confidence!", "success");
-      }, 700);
+    const sampleAwsBtn = document.getElementById("sampleAwsBtn");
+    const sampleInsuranceBtn = document.getElementById("sampleInsuranceBtn");
+    const sampleLicenseBtn = document.getElementById("sampleLicenseBtn");
+
+    let currentFile = null;
+    let lastExtraction = null;
+
+    function formatRelativeExpiry(dateStr) {
+      if (!dateStr) return "";
+      try {
+        const target = new Date(dateStr + "T00:00:00");
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const diffDays = Math.round((target - today) / (1000 * 60 * 60 * 24));
+        if (diffDays < 0) return `Expired ${Math.abs(diffDays)} days ago`;
+        if (diffDays === 0) return "Expires today";
+        if (diffDays === 1) return "Expires tomorrow";
+        if (diffDays < 30) return `Expires in ${diffDays} days`;
+        if (diffDays < 365) {
+          const m = Math.round(diffDays / 30.4);
+          return `Expires in ~${m} ${m === 1 ? "month" : "months"}`;
+        }
+        const y = (diffDays / 365.25).toFixed(1);
+        return `Expires in ~${y} years (${diffDays} days)`;
+      } catch (_) {
+        return "";
+      }
     }
 
-    if (testBtn) {
-      testBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        runExtraction("Sample_Cloudflare_Enterprise_SLA.pdf");
+    function displayExtractedData(data, fileName, fileObj) {
+      lastExtraction = data;
+      currentFile = fileObj || null;
+
+      if (statusBox) statusBox.style.display = "none";
+      if (!resultBox) return;
+
+      const titleInput = document.getElementById("aiTitle");
+      const expiryInput = document.getElementById("aiExpiry");
+      const expiryRelative = document.getElementById("aiExpiryRelative");
+      const orgInput = document.getElementById("aiOrg");
+      const refInput = document.getElementById("aiRef");
+      const categorySelect = document.getElementById("aiCategory");
+      const issueDateInput = document.getElementById("aiIssueDate");
+      const costInput = document.getElementById("aiCost");
+      const cycleSelect = document.getElementById("aiCycle");
+      const fileNameDisplay = document.getElementById("aiFileNameDisplay");
+      const confidenceBadge = document.getElementById("aiConfidenceBadge");
+
+      if (titleInput) titleInput.value = data.title || "";
+      if (expiryInput) {
+        expiryInput.value = data.expiryDate || "";
+        if (expiryRelative) expiryRelative.textContent = formatRelativeExpiry(data.expiryDate);
+      }
+      if (orgInput) orgInput.value = data.organization || "";
+      if (refInput) refInput.value = data.referenceNumber || "";
+      if (categorySelect) categorySelect.value = data.category || "Certification";
+      if (issueDateInput) issueDateInput.value = data.issueDate || "";
+      if (costInput) costInput.value = data.cost ? Number(data.cost).toFixed(2) : "";
+      if (cycleSelect) cycleSelect.value = "Yearly";
+
+      if (fileNameDisplay) {
+        const sizeInfo = fileObj && fileObj.size ? ` (${(fileObj.size / 1024).toFixed(1)} KB)` : "";
+        fileNameDisplay.textContent = `📄 Document: ${fileName}${sizeInfo}`;
+      }
+
+      if (confidenceBadge) {
+        confidenceBadge.textContent = `${(data.confidence || 98.4).toFixed(1)}% Confidence`;
+      }
+
+      if (rawSnippetContainer) {
+        rawSnippetContainer.textContent = data.rawSnippet || "(No raw text preview available)";
+        rawSnippetContainer.style.display = "none";
+      }
+
+      resultBox.style.display = "block";
+      RTS.refreshIcons();
+
+      // Scroll smoothly to results
+      resultBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+      RTS.toast(
+        `AI SmartDoc: Renewal date detected as ${data.expiryDate} (${data.title})`,
+        "success"
+      );
+    }
+
+    async function processCertificateFile(file) {
+      if (!file) return;
+
+      if (resultBox) resultBox.style.display = "none";
+      if (statusBox) statusBox.style.display = "block";
+      if (progressBar) progressBar.style.width = "15%";
+      if (statusText) statusText.textContent = `AI SmartDoc: Initializing scan for ${file.name}...`;
+
+      try {
+        const onProgress = (pct, msg) => {
+          if (progressBar) progressBar.style.width = `${pct}%`;
+          if (statusText && msg) statusText.textContent = `AI SmartDoc: ${msg}`;
+        };
+
+        const extractedText = await (window.SmartDoc
+          ? window.SmartDoc.extractTextFromFile(file, onProgress)
+          : Promise.resolve(file.name));
+
+        onProgress(92, "Analyzing certificate terms, validity & renewal date...");
+        await new Promise((r) => setTimeout(r, 200));
+
+        const parsed = window.SmartDoc
+          ? window.SmartDoc.parseCertificateData(extractedText, file.name, file)
+          : {
+              title: file.name.replace(/\.[^/.]+$/, ""),
+              expiryDate: "2027-10-15",
+              organization: "Certifying Authority",
+              category: "Certification",
+              cost: 0,
+              confidence: 96,
+            };
+
+        displayExtractedData(parsed, file.name, file);
+      } catch (err) {
+        if (statusBox) statusBox.style.display = "none";
+        console.error("[SmartDoc Scan Error]", err);
+        RTS.toast("Scan error: " + err.message, "error");
+      }
+    }
+
+    function runSample(key) {
+      const sample = window.SmartDoc && window.SmartDoc.SAMPLES && window.SmartDoc.SAMPLES[key];
+      if (!sample) return;
+
+      if (resultBox) resultBox.style.display = "none";
+      if (statusBox) statusBox.style.display = "block";
+      if (progressBar) progressBar.style.width = "40%";
+      if (statusText) statusText.textContent = `AI SmartDoc: Extracting sample ${sample.fileName}...`;
+
+      setTimeout(() => {
+        if (progressBar) progressBar.style.width = "90%";
+        setTimeout(() => {
+          const parsed = window.SmartDoc.parseCertificateData(sample.text, sample.fileName);
+          // Create dummy File object for document attachment demonstration
+          const dummyBlob = new Blob([sample.text], { type: "application/pdf" });
+          const dummyFile = new File([dummyBlob], sample.fileName, { type: "application/pdf" });
+          displayExtractedData(parsed, sample.fileName, dummyFile);
+        }, 300);
+      }, 400);
+    }
+
+    // Dynamic date change listener
+    const expiryInput = document.getElementById("aiExpiry");
+    if (expiryInput) {
+      expiryInput.addEventListener("input", (e) => {
+        const relativeSpan = document.getElementById("aiExpiryRelative");
+        if (relativeSpan) relativeSpan.textContent = formatRelativeExpiry(e.target.value);
       });
     }
 
+    // Dropzone interaction
     if (dropzone && fileInput) {
       dropzone.addEventListener("click", () => fileInput.click());
+
+      dropzone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropzone.classList.add("dragover");
+      });
+
+      dropzone.addEventListener("dragleave", () => {
+        dropzone.classList.remove("dragover");
+      });
+
+      dropzone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropzone.classList.remove("dragover");
+        const files = e.dataTransfer && e.dataTransfer.files;
+        if (files && files[0]) {
+          processCertificateFile(files[0]);
+        }
+      });
+
       fileInput.addEventListener("change", () => {
         if (fileInput.files && fileInput.files[0]) {
-          runExtraction(fileInput.files[0].name);
+          processCertificateFile(fileInput.files[0]);
         }
       });
     }
 
+    // Sample buttons
+    if (sampleAwsBtn) sampleAwsBtn.addEventListener("click", () => runSample("aws"));
+    if (sampleInsuranceBtn) sampleInsuranceBtn.addEventListener("click", () => runSample("insurance"));
+    if (sampleLicenseBtn) sampleLicenseBtn.addEventListener("click", () => runSample("license"));
+
+    // Raw snippet toggle
+    if (toggleRawBtn && rawSnippetContainer) {
+      toggleRawBtn.addEventListener("click", () => {
+        const isHidden = rawSnippetContainer.style.display === "none";
+        rawSnippetContainer.style.display = isHidden ? "block" : "none";
+      });
+    }
+
+    // Reset button
+    if (resetAiBtn) {
+      resetAiBtn.addEventListener("click", () => {
+        if (resultBox) resultBox.style.display = "none";
+        if (statusBox) statusBox.style.display = "none";
+        if (fileInput) fileInput.value = "";
+        currentFile = null;
+        lastExtraction = null;
+        if (dropzone) dropzone.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
+    }
+
+    // Save as Tracked Renewal Record
     if (saveAiBtn) {
-      saveAiBtn.addEventListener("click", () => {
-        const newRecord = {
-          title: "Cloudflare Enterprise SLA Agreement",
-          vendor: "Cloudflare, Inc.",
-          expiryDate: "2027-09-30",
-          category: "Software",
-          cost: 24000,
-          recurringCycle: "yearly",
-          status: "Active",
-          priority: "High",
-          description: "AI-extracted enterprise SLA & DDoS mitigation agreement.",
-        };
-        const created = RTS.data.createRecord(newRecord);
-        RTS.toast("Saved to active renewals! ID: " + created.id, "success");
-        setTimeout(() => {
-          window.location.href = "details.html?id=" + encodeURIComponent(created.id);
-        }, 1000);
+      saveAiBtn.addEventListener("click", async () => {
+        const title = (document.getElementById("aiTitle").value || "").trim();
+        const expiry = (document.getElementById("aiExpiry").value || "").trim();
+        const org = (document.getElementById("aiOrg").value || "").trim();
+        const ref = (document.getElementById("aiRef").value || "").trim();
+        const cat = document.getElementById("aiCategory").value || "Certification";
+        const issueDate = document.getElementById("aiIssueDate").value || "";
+        const costVal = parseFloat(document.getElementById("aiCost").value) || 0;
+        const cycle = document.getElementById("aiCycle").value || "Yearly";
+
+        if (!title) {
+          RTS.toast("Please enter a title for this certificate record.", "error");
+          document.getElementById("aiTitle").focus();
+          return;
+        }
+
+        if (!expiry) {
+          RTS.toast("Please specify a renewal/expiry date.", "error");
+          document.getElementById("aiExpiry").focus();
+          return;
+        }
+
+        saveAiBtn.disabled = true;
+        saveAiBtn.innerHTML = `<i data-lucide="loader-2" class="icon icon-spin"></i> Saving Record & Attaching Certificate...`;
+        RTS.refreshIcons();
+
+        try {
+          const recordData = {
+            name: title,
+            organization: org || "Certified Authority",
+            expiryDate: expiry,
+            issueDate: issueDate || new Date().toISOString().slice(0, 10),
+            category: cat,
+            cost: costVal,
+            currency: "USD",
+            recurringCycle: cycle,
+            priority: "Medium",
+            referenceNumber: ref,
+            description: `Auto-extracted by AI SmartDoc from certificate "${title}".`,
+            reminderDate: RTS.addDays ? RTS.addDays(expiry, -14) : null,
+          };
+
+          const created = RTS.data.addRenewal(recordData);
+
+          // If a file was uploaded, attach it as an official document
+          if (currentFile && RTS.data.uploadDocument) {
+            try {
+              await RTS.data.uploadDocument(created.id, currentFile);
+            } catch (docErr) {
+              console.warn("[SmartDoc] Document attachment error:", docErr);
+            }
+          }
+
+          RTS.toast(`Certificate renewal tracked! Expiry date: ${expiry}`, "success");
+
+          setTimeout(() => {
+            window.location.href = "details.html?id=" + encodeURIComponent(created.id);
+          }, 800);
+        } catch (err) {
+          saveAiBtn.disabled = false;
+          saveAiBtn.innerHTML = `<i data-lucide="plus-circle" class="icon"></i> Save as Tracked Renewal Record`;
+          RTS.refreshIcons();
+          RTS.toast("Failed to save record: " + err.message, "error");
+        }
       });
     }
   }

@@ -3402,9 +3402,24 @@ table.data-table tbody tr:hover {
   transition: border-color 0.15s, background 0.15s;
 }
 
-.upload-dropzone:hover {
+.upload-dropzone:hover,
+.upload-dropzone.dragover {
   border-color: var(--accent);
   background: var(--accent-dim);
+}
+
+.upload-dropzone.dragover {
+  transform: scale(1.01);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.icon-spin {
+  animation: spin 1s linear infinite;
+  display: inline-block;
 }
 
 .modal.modal-lg {

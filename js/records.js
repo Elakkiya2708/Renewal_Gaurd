@@ -281,11 +281,29 @@
     const input = document.getElementById("fileInput");
     if (!zone || !input) return;
     zone.addEventListener("click", () => input.click());
-    input.addEventListener("change", () => {
-      Array.from(input.files).forEach((file) => {
+
+    zone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      zone.classList.add("dragover");
+    });
+    zone.addEventListener("dragleave", () => {
+      zone.classList.remove("dragover");
+    });
+    zone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      zone.classList.remove("dragover");
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+        input.files = e.dataTransfer.files;
+        input.dispatchEvent(new Event("change"));
+      }
+    });
+
+    input.addEventListener("change", async () => {
+      const files = Array.from(input.files || []);
+      for (const file of files) {
         if (file.size > 5 * 1024 * 1024) {
           RTS.toast(`${file.name} is too large (max 5 MB).`, "error");
-          return;
+          continue;
         }
         pendingDocs.unshift({
           id: RTS.uid("doc"),
@@ -295,7 +313,39 @@
           size: (file.size / 1024).toFixed(1) + " KB",
           uploadDate: RTS.todayISO(),
         });
-      });
+
+        // If SmartDoc is available and fields are empty, auto-extract renewal details!
+        if (window.SmartDoc && (!document.getElementById("in_expiryDate").value || !document.getElementById("in_name").value)) {
+          try {
+            RTS.toast(`AI SmartDoc: Scanning ${file.name} for renewal terms...`, "info");
+            const text = await window.SmartDoc.extractTextFromFile(file);
+            const parsed = window.SmartDoc.parseCertificateData(text, file.name, file);
+            if (parsed && parsed.expiryDate) {
+              const nameInput = document.getElementById("in_name");
+              const orgInput = document.getElementById("in_organization");
+              const expiryInput = document.getElementById("in_expiryDate");
+              const issueInput = document.getElementById("in_issueDate");
+              const refInput = document.getElementById("in_reference");
+              const costInput = document.getElementById("in_cost");
+              const catSelect = document.getElementById("in_category");
+
+              if (nameInput && !nameInput.value) nameInput.value = parsed.title;
+              if (orgInput && !orgInput.value) orgInput.value = parsed.organization;
+              if (expiryInput && !expiryInput.value) expiryInput.value = parsed.expiryDate;
+              if (issueInput && !issueInput.value && parsed.issueDate) issueInput.value = parsed.issueDate;
+              if (refInput && !refInput.value && parsed.referenceNumber) refInput.value = parsed.referenceNumber;
+              if (costInput && (!costInput.value || costInput.value === "0") && parsed.cost) costInput.value = parsed.cost;
+              if (catSelect && (!catSelect.value || catSelect.value === "")) {
+                const opt = Array.from(catSelect.options).find((o) => o.value.toLowerCase() === parsed.category.toLowerCase());
+                if (opt) catSelect.value = opt.value;
+              }
+              RTS.toast(`AI SmartDoc: Extracted renewal date (${parsed.expiryDate}) and details from ${file.name}!`, "success");
+            }
+          } catch (e) {
+            console.warn("[SmartDoc] Auto-fill note:", e);
+          }
+        }
+      }
       input.value = "";
       renderUploadList();
     });
