@@ -1,0 +1,23 @@
+{
+  "name": "renewal-tracking-system",
+  "version": "1.0.0",
+  "description": "Renewal Tracking System frontend",
+  "scripts": {
+    "start": "node server.js",
+    "build": "node -e \"console.log('Build completed for RenewalTrack.')\""
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.117.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.7",
+    "express": "^5.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "node-cron": "^4.6.0",
+    "nodemailer": "^10.1.0",
+    "resend": "^6.32.1"
+  }
+}
