@@ -11,7 +11,7 @@ const fs = require("fs");
 // generated once and persisted so sessions survive restarts.
 function resolveJwtSecret() {
   const fromEnv = (process.env.JWT_SECRET || "").trim();
-  const weak = !fromEnv || /renewaltrack_jwt|change[-_ ]?me|your[-_ ]?secret/i.test(fromEnv) || fromEnv.length < 24;
+  const weak = !fromEnv || /renewgaurd_jwt|renewaltrack_jwt|change[-_ ]?me|your[-_ ]?secret/i.test(fromEnv) || fromEnv.length < 24;
   if (!weak) return fromEnv;
   if (process.env.NODE_ENV === "production") {
     throw new Error("JWT_SECRET must be set to a random string of 24+ characters in production.");
@@ -60,13 +60,13 @@ const config = {
   SMTP_SERVICE: process.env.SMTP_SERVICE || (process.env.SMTP_HOST && process.env.SMTP_HOST.includes("gmail") ? "gmail" : (process.env.GMAIL_USER ? "gmail" : "")),
   SMTP_USER: (process.env.GMAIL_USER || process.env.SMTP_USER || "").trim(),
   SMTP_PASS: (process.env.GMAIL_APP_PASSWORD || process.env.SMTP_PASS || "").replace(/\s+/g, ""),
-  EMAIL_FROM: process.env.EMAIL_FROM || process.env.FROM_EMAIL || (process.env.GMAIL_USER ? `RenewalHub <${process.env.GMAIL_USER}>` : "RenewalHub <no-reply@localhost>"),
-  FROM_EMAIL: process.env.EMAIL_FROM || process.env.FROM_EMAIL || (process.env.GMAIL_USER ? `RenewalHub <${process.env.GMAIL_USER}>` : "RenewalHub <no-reply@localhost>"),
-  FROM_NAME: process.env.FROM_NAME || "RenewalTrack Alerts",
+  EMAIL_FROM: process.env.EMAIL_FROM || process.env.FROM_EMAIL || (process.env.GMAIL_USER ? `RenewGaurd <${process.env.GMAIL_USER}>` : "RenewGaurd <no-reply@localhost>"),
+  FROM_EMAIL: process.env.EMAIL_FROM || process.env.FROM_EMAIL || (process.env.GMAIL_USER ? `RenewGaurd <${process.env.GMAIL_USER}>` : "RenewGaurd <no-reply@localhost>"),
+  FROM_NAME: process.env.FROM_NAME || "RenewGaurd Alerts",
 
   // Resend API Settings
   RESEND_API_KEY: process.env.RESEND_API_KEY || "",
-  RESEND_FROM: process.env.EMAIL_FROM || process.env.RESEND_FROM || "RenewalTrack <onboarding@resend.dev>",
+  RESEND_FROM: process.env.EMAIL_FROM || process.env.RESEND_FROM || "RenewGaurd <onboarding@resend.dev>",
   RESEND_WEBHOOK_SECRET: process.env.RESEND_WEBHOOK_SECRET || "",
 
   // Background Reminder Scheduler (node-cron)

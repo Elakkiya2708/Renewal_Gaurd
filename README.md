@@ -1,4 +1,4 @@
-# RenewalTrack / RenewalHub — Private Renewal Management
+# RenewGaurd / RenewalHub — Private Renewal Management
 
 Track contracts, licenses, certifications, warranties, insurance, subscriptions and
 permits with reminders, document storage, history and reports.
@@ -47,7 +47,7 @@ dashboard. Data is stored in `data/store.json` (git-ignored) and uploaded files 
 ## Project structure
 
 ```
-renewal-tracking-system/
+renew-gaurding-system/
 ├── start.bat / server.js / package.json   Local launcher (Node, zero dependencies)
 ├── index.html          Public landing page (hero, features, FAQ…) — Login/Sign Up buttons lead to the app
 ├── login.html
@@ -122,7 +122,7 @@ Render free tier) attach a persistent disk or move storage to object storage.
 
 ## Automated Real Email Reminder System
 
-RenewalTrack includes an automated, background-scheduled email reminder engine powered by **Node.js, Express, node-cron, Nodemailer / Resend, and Supabase PostgreSQL**:
+RenewGaurd includes an automated, background-scheduled email reminder engine powered by **Node.js, Express, node-cron, Nodemailer / Resend, and Supabase PostgreSQL**:
 
 - **Automated Intervals:** Dispatches notifications **30 days, 15 days, 7 days** before expiry, and **on the exact expiry date (0 days)**.
 - **Duplicate Prevention:** Tracks every sent reminder in the `reminder_logs` database table with a unique constraint on `(renewal_id, reminder_interval, expiry_date)`. Reminders for the same interval will never be sent twice.

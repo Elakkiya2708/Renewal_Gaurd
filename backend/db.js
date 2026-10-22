@@ -49,7 +49,7 @@ function migrate(store) {
     if (k in store) { delete store[k]; changed = true; }
   }
   const before = store.users.length;
-  store.users = store.users.filter((u) => u && u.email && u.email.toLowerCase() !== "demo@renewaltrack.com");
+  store.users = store.users.filter((u) => u && u.email && u.email.toLowerCase() !== "demo@renewaltrack.com" && u.email.toLowerCase() !== "demo@renewgaurd.com");
   if (store.users.length !== before) changed = true;
   store.users.forEach((u) => {
     u.email = u.email.trim().toLowerCase();

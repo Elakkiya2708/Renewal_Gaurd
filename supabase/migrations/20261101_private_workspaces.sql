@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS invitations CASCADE;
 DROP TABLE IF EXISTS audit_logs CASCADE;
 
 -- 2. Users: drop role/status columns and the old seeded demo users
-DELETE FROM app_users WHERE email = 'demo@renewaltrack.com';
+DELETE FROM app_users WHERE email = 'demo@renewgaurd.com';
 ALTER TABLE app_users DROP COLUMN IF EXISTS role, DROP COLUMN IF EXISTS status, DROP COLUMN IF EXISTS last_login;
 ALTER TABLE app_users ADD COLUMN IF NOT EXISTS password VARCHAR(255);
 DROP INDEX IF EXISTS idx_app_users_role;

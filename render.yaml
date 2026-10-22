@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: renewaltrack-tyvw
+    name: renewgaurd-tyvw
     runtime: node
     plan: starter # Starter plan supports persistent disk. For free tier without disk, configure Supabase credentials below.
     buildCommand: npm install
@@ -12,11 +12,11 @@ services:
       - key: PORT
         value: 10000
       - key: BACKEND_URL
-        value: https://renewaltrack-tyvw.onrender.com
+        value: https://renewgaurd-tyvw.onrender.com
       - key: APP_URL
-        sync: false # Set to your production Vercel frontend URL (e.g. https://renewal-track.vercel.app)
+        sync: false # Set to your production Vercel frontend URL (e.g. https://renew-gaurd.vercel.app)
       - key: ALLOWED_ORIGINS
-        sync: false # Comma-separated allowed origins (e.g. https://renewal-track.vercel.app)
+        sync: false # Comma-separated allowed origins (e.g. https://renew-gaurd.vercel.app)
       - key: ALLOW_VERCEL_PREVIEWS
         value: "true"
       - key: JWT_SECRET
@@ -52,6 +52,6 @@ services:
       - key: SUPABASE_SERVICE_ROLE_KEY
         sync: false
     disk:
-      name: renewaltrack-data
+      name: renewgaurd-data
       mountPath: /var/data
       sizeGB: 1

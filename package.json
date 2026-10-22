@@ -1,10 +1,10 @@
 {
-  "name": "renewal-tracking-system",
+  "name": "renew-gaurding-system",
   "version": "1.0.0",
   "description": "Renewal Tracking System frontend",
   "scripts": {
     "start": "node server.js",
-    "build": "node -e \"console.log('Build completed for RenewalTrack.')\""
+    "build": "node -e \"console.log('Build completed for RenewGaurd.')\""
   },
   "engines": {
     "node": ">=18.0.0"

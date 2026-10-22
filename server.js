@@ -1,5 +1,5 @@
 /* ==========================================================================
-   server.js — RenewalTrack Production Backend (Express.js + Supabase + Cron)
+   server.js — RenewGaurd Production Backend (Express.js + Supabase + Cron)
    Serves static frontend, hosts REST APIs, and runs automated email reminder cron.
    ========================================================================== */
 

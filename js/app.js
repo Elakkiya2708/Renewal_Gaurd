@@ -55,7 +55,7 @@
 
   const I18N = {
     en: {
-      appName: "RenewalTrack",
+      appName: "RenewGaurd",
       tagline: "Renewal Tracking System",
       main: "Main",
       teamManagement: "Team Management",
@@ -507,7 +507,7 @@
       const isLocal = host === "localhost" || host === "127.0.0.1" || host === "";
       const isBackendHost = host.includes("onrender.com");
       if (!isLocal && !isBackendHost && (host.endsWith(".vercel.app") || host.includes("vercel"))) {
-        runtimeBase = "https://renewaltrack-tyvw.onrender.com";
+        runtimeBase = "https://renewgaurd-tyvw.onrender.com";
       }
     }
 
@@ -525,7 +525,7 @@
   let syncBroadcastChannel = null;
   try {
     if (typeof BroadcastChannel !== "undefined") {
-      syncBroadcastChannel = new BroadcastChannel("renewaltrack_data_sync");
+      syncBroadcastChannel = new BroadcastChannel("renewgaurd_data_sync");
       syncBroadcastChannel.onmessage = (evt) => {
         if (evt && evt.data && evt.data.type === "renewal-data-updated") {
           syncRenewalsFromBackend({ broadcast: false }).then(() => {
@@ -1926,10 +1926,10 @@
     const lines = [
       "BEGIN:VCALENDAR",
       "VERSION:2.0",
-      "PRODID:-//RenewalTrack//Renewal Tracking System//EN",
+      "PRODID:-//RenewGaurd//Renewal Tracking System//EN",
       "CALSCALE:GREGORIAN",
       "METHOD:PUBLISH",
-      "X-WR-CALNAME:RenewalTrack Expirations",
+      "X-WR-CALNAME:RenewGaurd Expirations",
     ];
 
     records.forEach((r) => {
@@ -1941,7 +1941,7 @@
 
       lines.push(
         "BEGIN:VEVENT",
-        `UID:${r.id || uid("cal")}@renewaltrack.com`,
+        `UID:${r.id || uid("cal")}@renewgaurd.com`,
         `DTSTAMP:${stamp}`,
         `DTSTART;VALUE=DATE:${dt}`,
         `DTEND;VALUE=DATE:${nextDay}`,

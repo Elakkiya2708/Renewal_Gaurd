@@ -1,4 +1,4 @@
-# RenewalTrack — Production Deployment Guide
+# RenewGaurd — Production Deployment Guide
 **Frontend**: Vercel &nbsp;|&nbsp; **Backend**: Render (Node.js) &nbsp;|&nbsp; **Database**: Render Persistent Disk or Supabase PostgreSQL
 
 ---
@@ -15,7 +15,7 @@
 ┌───────────────────────────────┐               ┌───────────────────────────────┐
 │        Vercel Frontend        │               │         Render Backend        │
 │    (Static HTML/CSS/JS)       │               │       (Express.js API)        │
-│  https://renewal-track.vercel.app│               │https://renewaltrack-tyvw.onrender.com│
+│  https://renew-gaurd.vercel.app│               │https://renewgaurd-tyvw.onrender.com│
 └───────────────┬───────────────┘               └───────────────┬───────────────┘
                 │                                               │
                 │ Rewrites /api/* to Render                     │
@@ -42,13 +42,13 @@
 1. Push your repository to GitHub.
 2. Sign in to [Render Dashboard](https://dashboard.render.com/).
 3. Click **New +** &rarr; **Blueprint**.
-4. Select your `RenewalTrack` GitHub repository.
+4. Select your `RenewGaurd` GitHub repository.
 5. Render will detect [`render.yaml`](./render.yaml) automatically.
 6. Under **Environment Variables**, fill in your secret values:
    - `GMAIL_USER`: `elakkiya270806@gmail.com` (or your sending Gmail)
    - `GMAIL_APP_PASSWORD`: Your 16-character Google App Password (without spaces)
-   - `APP_URL`: `https://renewal-track.vercel.app`
-   - `ALLOWED_ORIGINS`: `https://renewal-track.vercel.app`
+   - `APP_URL`: `https://renew-gaurd.vercel.app`
+   - `ALLOWED_ORIGINS`: `https://renew-gaurd.vercel.app`
 7. Click **Apply**.
 8. Render will provision the Web Service, attach the 1GB persistent disk at `/var/data`, and start the server.
 
@@ -58,15 +58,15 @@
 
 1. Sign in to [Render Dashboard](https://dashboard.render.com/).
 2. Click **New +** &rarr; **Web Service**.
-3. Connect your `RenewalTrack` GitHub repository.
+3. Connect your `RenewGaurd` GitHub repository.
 4. Fill in the service configuration:
-   - **Name**: `renewaltrack-backend`
+   - **Name**: `renewgaurd-backend`
    - **Runtime**: `Node`
    - **Build Command**: `npm install`
    - **Start Command**: `npm start`
    - **Health Check Path**: `/api/health`
 5. Click **Advanced** &rarr; **Add Disk**:
-   - **Name**: `renewaltrack-data`
+   - **Name**: `renewgaurd-data`
    - **Mount Path**: `/var/data`
    - **Size**: `1 GB`
 6. Add Environment Variables under **Environment**:
@@ -76,8 +76,8 @@
 | `NODE_ENV` | `production` | Production mode |
 | `PORT` | `10000` | Port automatically assigned by Render |
 | `DATA_DIR` | `/var/data` | Points to persistent disk mount |
-| `APP_URL` | `https://renewal-track.vercel.app` | Your live Vercel frontend URL |
-| `ALLOWED_ORIGINS` | `https://renewal-track.vercel.app` | Allowed CORS origin |
+| `APP_URL` | `https://renew-gaurd.vercel.app` | Your live Vercel frontend URL |
+| `ALLOWED_ORIGINS` | `https://renew-gaurd.vercel.app` | Allowed CORS origin |
 | `ALLOW_VERCEL_PREVIEWS` | `true` | Allows Vercel preview URLs |
 | `JWT_SECRET` | *(Click "Generate")* | Strong random string |
 | `EMAIL_PROVIDER` | `nodemailer` | Real email delivery engine |
@@ -91,13 +91,13 @@
 | `CRON_SCHEDULE` | `0 8 * * *` | Daily alert cron at 08:00 AM |
 
 7. Click **Create Web Service**.
-8. Note your public backend URL: `https://renewaltrack-tyvw.onrender.com`.
+8. Note your public backend URL: `https://renewgaurd-tyvw.onrender.com`.
 
 ---
 
 ## Part 2: Data Persistence Guarantee
 
-Render Web Services use ephemeral filesystems by default. RenewalTrack ensures **zero data loss** through two supported mechanisms:
+Render Web Services use ephemeral filesystems by default. RenewGaurd ensures **zero data loss** through two supported mechanisms:
 
 ### Method 1: Render Persistent Disk (Configured via `render.yaml`)
 - A 1GB disk mounted at `/var/data` stores `store.json`.
@@ -115,7 +115,7 @@ Render Web Services use ephemeral filesystems by default. RenewalTrack ensures *
   - `SUPABASE_URL`: `https://pzkyvgcbfjcnzcxsgekb.supabase.co`
   - `SUPABASE_ANON_KEY`: *(Your Supabase anon public key)*
   - `SUPABASE_SERVICE_ROLE_KEY`: *(Your Supabase service_role secret key)*
-- **Step 4**: RenewalTrack will automatically detect your Supabase connection and run in PostgreSQL mode!
+- **Step 4**: RenewGaurd will automatically detect your Supabase connection and run in PostgreSQL mode!
 
 ---
 
@@ -123,7 +123,7 @@ Render Web Services use ephemeral filesystems by default. RenewalTrack ensures *
 
 1. Sign in to [Vercel](https://vercel.com).
 2. Click **Add New...** &rarr; **Project**.
-3. Import your `RenewalTrack` GitHub repository.
+3. Import your `RenewGaurd` GitHub repository.
 4. Verify **Build & Development Settings**:
    - **Framework Preset**: Select **Other** (pure static HTML/CSS/JS).
    - **Root Directory**: `./` (leave default root).
@@ -136,17 +136,17 @@ Render Web Services use ephemeral filesystems by default. RenewalTrack ensures *
      "rewrites": [
        {
          "source": "/api/:path*",
-         "destination": "https://renewaltrack-tyvw.onrender.com/api/:path*"
+         "destination": "https://renewgaurd-tyvw.onrender.com/api/:path*"
        }
      ]
    }
    ```
 7. Click **Deploy**.
-8. Vercel will deploy your static frontend in seconds: [`https://renewal-track.vercel.app`](https://renewal-track.vercel.app).
+8. Vercel will deploy your static frontend in seconds: [`https://renew-gaurd.vercel.app`](https://renew-gaurd.vercel.app).
 9. Direct cross-origin API calls are also pre-configured in [`js/config.js`](./js/config.js) to:
    ```javascript
    window.RTS_CONFIG = {
-     API_URL: "https://renewaltrack-tyvw.onrender.com",
+     API_URL: "https://renewgaurd-tyvw.onrender.com",
    };
    ```
 
@@ -160,7 +160,7 @@ To enable automated email alerts and invitations without any cost:
 2. On the left navigation, click **Security**.
 3. Under *"How you sign in to Google"*, make sure **2-Step Verification** is turned **ON**.
 4. Go to **App Passwords**: [https://myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)
-5. Enter App name: `RenewalTrack` &rarr; click **Create**.
+5. Enter App name: `RenewGaurd` &rarr; click **Create**.
 6. Google will display a 16-character password (e.g., `abcd efgh ijkl mnop`).
 7. Copy the code and remove all spaces: `abcdefghijklmnop`.
 8. In Render &rarr; Environment &rarr; set:
@@ -174,21 +174,21 @@ To enable automated email alerts and invitations without any cost:
 Once both services are deployed, verify the complete pipeline:
 
 1. **Backend Health Check**:
-   - Open `https://renewaltrack-tyvw.onrender.com/api/health`
+   - Open `https://renewgaurd-tyvw.onrender.com/api/health`
    - Response should return:
      ```json
      {
        "status": "ok",
-       "app": "RenewalTrack - Renewal & Compliance Management System",
+       "app": "RenewGaurd - Renewal & Compliance Management System",
        "smtpConfigured": true,
        "storageMode": "json_store"
      }
      ```
 2. **Frontend Loading**:
-   - Open your Vercel URL: `https://renewal-track.vercel.app`
+   - Open your Vercel URL: `https://renew-gaurd.vercel.app`
    - Verify landing page, styles, and Lucide icons render cleanly.
 3. **Admin Sign In**:
-   - Go to `https://renewal-track.vercel.app/login.html`
+   - Go to `https://renew-gaurd.vercel.app/login.html`
    - Register a test account and sign in
    - Dashboard loads with navigation and metrics.
 4. **Privacy check**:

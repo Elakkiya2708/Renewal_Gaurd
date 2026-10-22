@@ -28,7 +28,7 @@ function assert(condition, message, details = "") {
 
 async function runTests() {
   console.log("\n================================================================================");
-  console.log("  RenewalTrack: Gmail SMTP (Nodemailer) Real Email Delivery Test Suite          ");
+  console.log("  RenewGaurd: Gmail SMTP (Nodemailer) Real Email Delivery Test Suite          ");
   console.log("================================================================================\n");
 
   let passed = 0;
@@ -79,7 +79,7 @@ async function runTests() {
       priority: "High",
       status: "Upcoming",
     },
-    assignedBy: "RenewalTrack Admin Team",
+    assignedBy: "RenewGaurd Admin Team",
     isReassignment: false,
   });
   assert(assignResult.success === true, "Renewal assignment email dispatch returned success: true");
@@ -95,7 +95,7 @@ async function runTests() {
     fullName: "Elakkiya",
     role: "Employee",
     inviteUrl: `${config.APP_URL}/register.html?invite_token=test_gmail_token_${Date.now()}`,
-    invitedBy: "RenewalTrack Primary Administrator",
+    invitedBy: "RenewGaurd Primary Administrator",
   });
   assert(inviteResult.success === true, "Team invitation email dispatch returned success: true");
   assert(inviteResult.delivered === true, "Team invitation delivered in real mode");
@@ -123,7 +123,7 @@ async function runTests() {
     to: targetEmail,
     adminName: "Elakkiya",
     memberName: "Alex Rivera",
-    memberEmail: "alex.rivera@renewaltrack.com",
+    memberEmail: "alex.rivera@renewgaurd.com",
     role: "Employee",
     acceptedAt: new Date().toISOString(),
   });

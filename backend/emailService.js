@@ -109,7 +109,7 @@ function generateEmailHtml({ renewal, daysRemaining, interval, recipientName, ap
                 <tr>
                   <td>
                     <div style="font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;">
-                      <span style="color:#818cf8;">Renewal</span>Track
+                      <span style="color:#818cf8;">Renew</span>Gaurd
                     </div>
                     <div style="font-size:12px;color:#94a3b8;margin-top:2px;">
                       Automated Renewal &amp; Compliance Management
@@ -201,11 +201,11 @@ function generateEmailHtml({ renewal, daysRemaining, interval, recipientName, ap
           <!-- Footer -->
           <tr>
             <td style="background-color:#f8fafc;padding:20px 32px;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;text-align:center;">
-              <div>This is an automated notification from RenewalTrack.</div>
+              <div>This is an automated notification from RenewGaurd.</div>
               <div style="margin-top:6px;">
                 <a href="${settingsUrl}" style="color:#6366f1;text-decoration:underline;">Manage Notification Preferences</a>
                 &nbsp;&bull;&nbsp;
-                <a href="${appUrl}/dashboard.html" style="color:#6366f1;text-decoration:underline;">Open RenewalTrack Dashboard</a>
+                <a href="${appUrl}/dashboard.html" style="color:#6366f1;text-decoration:underline;">Open RenewGaurd Dashboard</a>
               </div>
             </td>
           </tr>
@@ -220,7 +220,7 @@ function generateEmailHtml({ renewal, daysRemaining, interval, recipientName, ap
 // Generate plain text email
 function generateEmailText({ renewal, daysRemaining, interval, recipientName, appUrl }) {
   const detailUrl = `${appUrl}/details.html?id=${encodeURIComponent(renewal.id)}`;
-  return `RENEWALTRACK - RENEWAL REMINDER (${daysRemaining <= 0 ? "EXPIRES TODAY" : `${daysRemaining} DAYS REMAINING`})
+  return `RENEWGAURD - RENEWAL REMINDER (${daysRemaining <= 0 ? "EXPIRES TODAY" : `${daysRemaining} DAYS REMAINING`})
 --------------------------------------------------------------------------------
 
 Hello ${recipientName || "Team"},
@@ -240,7 +240,7 @@ Action Required:
 Review and process this renewal at: ${detailUrl}
 
 --------------------------------------------------------------------------------
-Sent automatically by RenewalTrack Renewal & Compliance Management System.
+Sent automatically by RenewGaurd Renewal & Compliance Management System.
 Notification Preferences: ${appUrl}/settings.html
 `;
 }
@@ -253,10 +253,10 @@ const emailService = {
   // Resolve authoritative From header for the active provider
   getFromAddress() {
     const provider = (config.EMAIL_PROVIDER || "nodemailer").toLowerCase();
-    const fromName = config.FROM_NAME || "RenewalTrack Alerts";
+    const fromName = config.FROM_NAME || "RenewGaurd Alerts";
 
     if (provider === "resend") {
-      const fromEmail = (config.EMAIL_FROM || config.RESEND_FROM || config.FROM_EMAIL || "RenewalTrack <onboarding@resend.dev>").trim();
+      const fromEmail = (config.EMAIL_FROM || config.RESEND_FROM || config.FROM_EMAIL || "RenewGaurd <onboarding@resend.dev>").trim();
       if (fromEmail.includes("<") && fromEmail.includes(">")) {
         return fromEmail;
       }
@@ -264,7 +264,7 @@ const emailService = {
     }
 
     // For Nodemailer / Gmail SMTP:
-    const rawSmtp = (config.EMAIL_FROM || config.FROM_EMAIL || config.SMTP_USER || "reminders@renewaltrack.com").trim();
+    const rawSmtp = (config.EMAIL_FROM || config.FROM_EMAIL || config.SMTP_USER || "reminders@renewgaurd.com").trim();
     if (rawSmtp.includes("<") && rawSmtp.includes(">")) {
       return rawSmtp;
     }
@@ -596,7 +596,7 @@ const emailService = {
       cost: 18500,
       currency: "USD",
       referenceNumber: "TEST-REF-9921",
-      notes: "This is a real test notification generated from RenewalTrack to verify email delivery.",
+      notes: "This is a real test notification generated from RenewGaurd to verify email delivery.",
     };
 
     return await this.sendReminderEmail({
@@ -617,13 +617,13 @@ const emailService = {
     }
 
     const recipientName = fullName || to.split("@")[0];
-    const subject = "Reset Your RenewalTrack Password";
+    const subject = "Reset Your RenewGaurd Password";
 
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Reset Your RenewalTrack Password</title>
+  <title>Reset Your RenewGaurd Password</title>
 </head>
 <body style="margin:0;padding:0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1e293b;line-height:1.5;">
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f1f5f9;padding:32px 16px;">
@@ -636,7 +636,7 @@ const emailService = {
                 <tr>
                   <td>
                     <div style="font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;">
-                      <span style="color:#818cf8;">Renewal</span>Track
+                      <span style="color:#818cf8;">Renew</span>Gaurd
                     </div>
                     <div style="font-size:12px;color:#94a3b8;margin-top:2px;">
                       Account Security &amp; Password Recovery
@@ -657,7 +657,7 @@ const emailService = {
                 Hello, ${escapeHtml(recipientName)}!
               </h2>
               <p style="margin:0 0 16px;color:#475569;font-size:15px;line-height:1.6;">
-                We received a request to reset the password for your RenewalTrack account (<strong>${escapeHtml(to)}</strong>).
+                We received a request to reset the password for your RenewGaurd account (<strong>${escapeHtml(to)}</strong>).
               </p>
               <p style="margin:0 0 24px;color:#475569;font-size:15px;line-height:1.6;">
                 Click the secure button below to set a new password. This link is single-use and will expire in <strong>${expiresMinutes} minutes</strong>.
@@ -680,7 +680,7 @@ const emailService = {
           </tr>
           <tr>
             <td style="background-color:#f8fafc;padding:16px 32px;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;text-align:center;">
-              &copy; 2026 RenewalTrack Inc. &bull; Automated Security Notification
+              &copy; 2026 RenewGaurd Inc. &bull; Automated Security Notification
             </td>
           </tr>
         </table>
@@ -690,7 +690,7 @@ const emailService = {
 </body>
 </html>`;
 
-    const text = `Hello ${recipientName},\n\nWe received a request to reset your RenewalTrack password.\n\nPlease reset your password using this link (expires in ${expiresMinutes} minutes):\n${resetUrl}\n\nIf you did not request this, please ignore this email.`;
+    const text = `Hello ${recipientName},\n\nWe received a request to reset your RenewGaurd password.\n\nPlease reset your password using this link (expires in ${expiresMinutes} minutes):\n${resetUrl}\n\nIf you did not request this, please ignore this email.`;
 
     const from = this.getFromAddress();
     const provider = (config.EMAIL_PROVIDER || "nodemailer").toLowerCase();
@@ -760,7 +760,7 @@ const emailService = {
       return { success: true, simulated: true, messageId: `alert-logged-${Date.now()}` };
     }
 
-    const subject = `⚠️ [RenewalTrack Alert] Email Delivery Failed for ${recipientEmail}`;
+    const subject = `⚠️ [RenewGaurd Alert] Email Delivery Failed for ${recipientEmail}`;
     const text = `Email delivery failed for ${recipientEmail} (${recipientName}).\nRenewal: ${renewalName}\nReason: ${reason}\nType: ${emailType}\nTime: ${failureTime}`;
     const html = `<div style="font-family:sans-serif;padding:16px;">
       <h3 style="color:#dc2626;margin-top:0;">Email Delivery Failure Alert</h3>

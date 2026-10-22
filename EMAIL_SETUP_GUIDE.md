@@ -1,12 +1,12 @@
-# RenewalTrack — Real Email Delivery Setup & Verification Guide
+# RenewGaurd — Real Email Delivery Setup & Verification Guide
 
-This guide walks you through configuring and testing real email notifications in **RenewalTrack**. The daily scheduler (and the **Run Reminder Check Now** button in Settings) emails each user about their own renewals that are approaching expiry.
+This guide walks you through configuring and testing real email notifications in **RenewGaurd**. The daily scheduler (and the **Run Reminder Check Now** button in Settings) emails each user about their own renewals that are approaching expiry.
 
 ---
 
 ## 1. Choose Your Email Provider
 
-RenewalTrack natively supports two industry-standard email providers:
+RenewGaurd natively supports two industry-standard email providers:
 1. **Gmail SMTP (Nodemailer)** — Recommended for fastest, free setup without requiring domain DNS verification.
 2. **Resend API** — Recommended for high-scale, modern transactional email delivery via API.
 
@@ -20,7 +20,7 @@ Gmail allows you to send emails directly via SMTP using a secure **Google App Pa
 1. Go to your **[Google Account Security Settings](https://myaccount.google.com/security)**.
 2. Ensure **2-Step Verification** is turned **ON** for your Google account.
 3. Search for **"App passwords"** in the top search bar (or visit [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords)).
-4. Enter an app name: `RenewalTrack`.
+4. Enter an app name: `RenewGaurd`.
 5. Click **Create**.
 6. Google will generate a **16-character code** (e.g., `abcd efgh ijkl mnop`).
 7. Open your `.env` file in the project root and add:
@@ -33,7 +33,7 @@ Gmail allows you to send emails directly via SMTP using a secure **Google App Pa
    SMTP_SERVICE=gmail
    SMTP_USER=your-actual-email@gmail.com
    SMTP_PASS=abcdefghijklmnop
-   FROM_NAME=RenewalTrack Alerts
+   FROM_NAME=RenewGaurd Alerts
    ```
    *(Note: Enter the 16 characters in `SMTP_PASS` without spaces)*
 
@@ -46,13 +46,13 @@ Resend is a developer-first email platform that delivers transactional emails vi
 ### Step-by-Step Instructions:
 1. Sign up for a free account at **[resend.com](https://resend.com)**.
 2. Go to **API Keys** at [resend.com/api-keys](https://resend.com/api-keys).
-3. Click **Create API Key**, name it `RenewalTrack`, select **Full access**, and copy your key (starts with `re_...`).
+3. Click **Create API Key**, name it `RenewGaurd`, select **Full access**, and copy your key (starts with `re_...`).
 4. In your `.env` file, configure:
    ```env
    EMAIL_PROVIDER=resend
    EMAIL_SEND_ENABLED=true
    RESEND_API_KEY=re_your_api_key_here
-   FROM_NAME=RenewalTrack Alerts
+   FROM_NAME=RenewGaurd Alerts
    ```
 5. **Sender domain notes**:
    - In development/sandbox mode, Resend sends from `onboarding@resend.dev` and only allows sending to the email address registered with your Resend account.

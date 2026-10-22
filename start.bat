@@ -1,6 +1,6 @@
 @echo off
 cd /d "%~dp0"
-echo Starting RenewalTrack...
+echo Starting RenewGaurd...
 where node >nul 2>nul
 if %errorlevel%==0 (
   node server.js
@@ -13,7 +13,7 @@ if %errorlevel%==0 (
   goto :end
 )
 echo.
-echo Node.js or Python is required to run RenewalTrack.
+echo Node.js or Python is required to run RenewGaurd.
 echo Install Node.js (LTS) from https://nodejs.org and double-click start.bat again.
 echo.
 pause

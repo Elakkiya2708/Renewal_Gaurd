@@ -45,7 +45,7 @@ async function request(path, options = {}) {
 
 async function runTests() {
   console.log("\n================================================================================");
-  console.log("  RenewalTrack: Resend API Backend Integration Test Suite                        ");
+  console.log("  RenewGaurd: Resend API Backend Integration Test Suite                        ");
   console.log("================================================================================\n");
 
   const emailService = require("./backend/emailService");
@@ -202,7 +202,7 @@ async function runTests() {
       organization: "Amazon Web Services",
       referenceNumber: "AWS-ENT-8841",
     },
-    assignedBy: "RenewalTrack Admin",
+    assignedBy: "RenewGaurd Admin",
     isReassignment: false,
   });
   assert(
@@ -222,7 +222,7 @@ async function runTests() {
     fullName: "Elakkiya Ohai",
     role: "Employee",
     inviteUrl: `http://localhost:3000/register.html?invite=${inviteRecord.token}`,
-    invitedBy: "RenewalTrack Team Admin",
+    invitedBy: "RenewGaurd Team Admin",
   });
   assert(
     inviteResult.success === true && inviteResult.provider === "resend",
