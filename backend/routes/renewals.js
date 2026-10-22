@@ -185,7 +185,8 @@ async function handleMarkRenewed(req, res) {
       expiryDate: finalExpiryDate,
       lastRenewedAt: finalRenewalDate,
       status: "active",
-      reminderCompleted: false,
+      reminderCompleted: true,
+      reminderReopened: false,
       recurringCycle: cycle,
       reminderDate: nextReminderDate || record.reminderDate,
     }, req.user.id);
@@ -210,7 +211,7 @@ router.post("/:id/snooze", async (req, res) => {
       d.setDate(d.getDate() + (Number(req.body && req.body.days) || 7));
       newDate = d.toISOString().slice(0, 10);
     }
-    const saved = await db.saveRenewal({ ...record, reminderDate: newDate, reminderCompleted: false }, req.user.id);
+    const saved = await db.saveRenewal({ ...record, reminderDate: newDate, reminderCompleted: false, reminderReopened: true }, req.user.id);
     res.json({ ok: true, data: saved });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
@@ -222,7 +223,12 @@ router.post("/:id/reminder-status", async (req, res) => {
   try {
     const record = await db.getRenewalById(req.params.id, req.user.id);
     if (!record) return notFound(res);
-    const saved = await db.saveRenewal({ ...record, reminderCompleted: !!(req.body && req.body.reminderCompleted === true) }, req.user.id);
+    const isCompleted = !!(req.body && (req.body.reminderCompleted === true || req.body.completed === true));
+    const saved = await db.saveRenewal({
+      ...record,
+      reminderCompleted: isCompleted,
+      reminderReopened: !isCompleted,
+    }, req.user.id);
     res.json({ ok: true, data: saved });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });

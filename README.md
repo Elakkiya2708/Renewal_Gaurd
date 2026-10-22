@@ -1,4 +1,4 @@
-# RenewGaurd / RenewalHub — Private Renewal Management
+# RenewGaurd / RenewGaurd — Private Renewal Management
 
 Track contracts, licenses, certifications, warranties, insurance, subscriptions and
 permits with reminders, document storage, history and reports.

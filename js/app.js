@@ -787,13 +787,12 @@
         (h.newExpiry === newExpiry && h.renewalDate === renewalDate)
       )
     );
-    const combinedHistory = isDup ? existingHistory : [historyEntry, ...existingHistory];
-
     record.history = deduplicateHistory(combinedHistory);
     record.issueDate = renewalDate;
     record.expiryDate = newExpiry;
     record.lastRenewedAt = renewalDate;
-    record.reminderCompleted = false;
+    record.reminderCompleted = true;
+    record.reminderReopened = false;
     record.recurringCycle = cycle;
     if (payload.reminderDate) {
       record.reminderDate = payload.reminderDate;
@@ -826,6 +825,7 @@
     const newDate = customDate || addDays(todayISO(), days || 7);
     list[idx].reminderDate = newDate;
     list[idx].reminderCompleted = false;
+    list[idx].reminderReopened = true;
     saveRenewals(list);
     broadcastDataSync({ id, record: list[idx] });
     syncRenewalToBackend("POST", "/api/renewals/" + encodeURIComponent(id) + "/snooze", {
@@ -995,10 +995,12 @@
       });
     }
     list[idx].reminderCompleted = completed;
+    list[idx].reminderReopened = !completed;
     saveRenewals(list);
     broadcastDataSync({ id, record: list[idx] });
     syncRenewalToBackend("POST", "/api/renewals/" + encodeURIComponent(id) + "/reminder-status", {
       reminderCompleted: completed,
+      reminderReopened: !completed,
     });
     return list[idx];
   }
@@ -2302,7 +2304,7 @@
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "RenewalHub_Template.csv";
+    link.download = "RenewGaurd_Template.csv";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

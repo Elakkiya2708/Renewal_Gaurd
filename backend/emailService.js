@@ -602,7 +602,7 @@ const emailService = {
     return await this.sendReminderEmail({
       renewal: sampleRenewal,
       recipientEmail: targetEmail,
-      recipientName: "RenewalHub User",
+      recipientName: "RenewGaurd User",
       daysRemaining: 15,
       interval: "15_days",
     });

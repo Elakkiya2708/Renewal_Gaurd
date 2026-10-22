@@ -9,7 +9,10 @@
   let snoozeTargetId = null;
 
   function reminderStatus(record) {
-    if (record.reminderCompleted) return "Completed";
+    if (record.reminderCompleted === true) return "Completed";
+    if (record.lastRenewedAt && Array.isArray(record.history) && record.history.length > 0 && !record.reminderReopened) {
+      return "Completed";
+    }
     if (!record.reminderDate) return "Upcoming";
     return record.reminderDate < RTS.todayISO() ? "Overdue" : "Upcoming";
   }
@@ -60,7 +63,7 @@
                 </button>
                 ${
                   status === "Completed"
-                    ? `<button class="btn btn-ghost btn-sm" onclick="RemindersPage.toggle('${r.id}', false)">Mark Incomplete</button>`
+                    ? `<button class="btn btn-ghost btn-sm" onclick="RemindersPage.toggle('${r.id}', false)"><i data-lucide="rotate-ccw" class="icon" style="width:13px;height:13px;"></i> Mark Incomplete</button>`
                     : `<button class="btn btn-primary btn-sm" onclick="RemindersPage.toggle('${r.id}', true)"><i data-lucide="check" class="icon" style="width:13px;height:13px;"></i> Done</button>`
                 }
               </div>`;
@@ -102,6 +105,7 @@
       recurringCycle: cycle,
       notes: "Completed via Reminders (" + cycle + ")",
     });
+    RTS.data.toggleReminderCompleted(id, true);
     RTS.toast(`Renewal completed! Expiry set to ${RTS.formatDate(nextExpiry)} & history updated.`, "success");
     render();
   }
@@ -379,6 +383,7 @@
           renewedBy,
           notes: document.getElementById("renew_notes").value.trim(),
         });
+        RTS.data.toggleReminderCompleted(id, true);
         RTS.toast("Record marked as renewed! Renewal history updated.", "success");
         RTS.modal.close("renewModal");
         render();
@@ -404,6 +409,31 @@
         state.status = e.target.value;
         render();
       });
+    }
+
+    // Quick filter by clicking stat cards
+    const cardUp = document.getElementById("statUpcoming") ? document.getElementById("statUpcoming").closest(".stat-card") : null;
+    const cardOv = document.getElementById("statOverdue") ? document.getElementById("statOverdue").closest(".stat-card") : null;
+    const cardCo = document.getElementById("statCompleted") ? document.getElementById("statCompleted").closest(".stat-card") : null;
+    function applyStatusFilter(status) {
+      state.status = state.status === status ? "" : status;
+      if (filterStatus) filterStatus.value = state.status;
+      render();
+    }
+    if (cardUp) {
+      cardUp.style.cursor = "pointer";
+      cardUp.title = "Click to filter Upcoming";
+      cardUp.addEventListener("click", () => applyStatusFilter("Upcoming"));
+    }
+    if (cardOv) {
+      cardOv.style.cursor = "pointer";
+      cardOv.title = "Click to filter Overdue";
+      cardOv.addEventListener("click", () => applyStatusFilter("Overdue"));
+    }
+    if (cardCo) {
+      cardCo.style.cursor = "pointer";
+      cardCo.title = "Click to filter Completed";
+      cardCo.addEventListener("click", () => applyStatusFilter("Completed"));
     }
 
     wireEmailFeatures();

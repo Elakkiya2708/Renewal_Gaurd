@@ -11,7 +11,7 @@ const config = require("../config");
 const router = express.Router();
 
 router.get("/status", (req, res) => {
-  res.json({ ok: true, service: "RenewalHub Email Webhook Listener", activeProvider: config.EMAIL_PROVIDER, secretRequired: !!config.RESEND_WEBHOOK_SECRET });
+  res.json({ ok: true, service: "RenewGaurd Email Webhook Listener", activeProvider: config.EMAIL_PROVIDER, secretRequired: !!config.RESEND_WEBHOOK_SECRET });
 });
 
 function secretOk(req) {

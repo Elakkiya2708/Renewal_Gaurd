@@ -129,7 +129,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
-    app: "RenewalHub - Smart Renewal Management System",
+    app: "RenewGaurd - Smart Renewal Management System",
     version: "1.0.0",
     nodeEnv: process.env.NODE_ENV || "development",
     backendUrl: config.BACKEND_URL || "",
@@ -193,7 +193,7 @@ reminderScheduler.startScheduler();
 const server = app.listen(PORT, () => {
   const url = `http://localhost:${PORT}`;
   console.log("\n================================================================================");
-  console.log(`  RenewalHub — Smart Renewal Management System`);
+  console.log(`  RenewGaurd — Smart Renewal Management System`);
   console.log(`  Server running at: ${url}`);
   console.log(`  Supabase Status:   ${isSupabaseConnected() ? "CONNECTED (PostgreSQL)" : "LOCAL SAFE STORE (Configure .env for Supabase)"}`);
   console.log(`  Email Provider:    ${config.EMAIL_PROVIDER.toUpperCase()}`);
