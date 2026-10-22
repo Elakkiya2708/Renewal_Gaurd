@@ -377,7 +377,7 @@
         <span>Mark as Renewed</span>
         <span id="renewRecordTitle" style="font-size:13px;color:var(--accent);font-weight:600;margin-left:4px;"></span>
       </h3>
-      <button class="modal-close" data-close-modal="renewModal"><i data-lucide="x" class="icon"></i></button>
+      <button class="modal-close" data-close-modal="renewModal" onclick="RTS.modal.close('renewModal')"><i data-lucide="x" class="icon"></i></button>
     </div>
     <form id="renewForm" novalidate>
       <input type="hidden" id="renewTargetId" />
@@ -426,7 +426,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-close-modal="renewModal">Cancel</button>
+        <button type="button" class="btn btn-secondary" data-close-modal="renewModal" onclick="RTS.modal.close('renewModal')">Cancel</button>
         <button type="submit" class="btn btn-primary"><i data-lucide="check" class="icon"></i>Confirm Renewal</button>
       </div>
     </form>

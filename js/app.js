@@ -787,6 +787,7 @@
         (h.newExpiry === newExpiry && h.renewalDate === renewalDate)
       )
     );
+    const combinedHistory = isDup ? existingHistory : [historyEntry, ...existingHistory];
     record.history = deduplicateHistory(combinedHistory);
     record.issueDate = renewalDate;
     record.expiryDate = newExpiry;
