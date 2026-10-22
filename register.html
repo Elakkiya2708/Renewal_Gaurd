@@ -1,25 +1,921 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<link rel="icon" type="image/png" href="assets/favicon.png" data-img-indigo="assets/favicon.png" data-img-gold="assets/favicon-gold.png" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Create Account — Renewal Tracking System</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css" />
-<link rel="stylesheet" href="css/responsive.css" />
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="assets/favicon.png" data-img-indigo="assets/favicon.png" data-img-gold="assets/favicon-gold.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account — RenewGaurd</title>
+  <meta name="description" content="Create your RenewGaurd account to centralize every contract, license, warranty, and permit in one secure workspace." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;850&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+
+  <style>
+    /* ==========================================================================
+       Premium Modern SaaS Registration Page (Navy, White, Violet)
+       Strictly scoped to register.html
+       ========================================================================== */
+
+    :root {
+      --reg-navy-bg: #070B14;
+      --reg-navy-surface: #0F172A;
+      --reg-navy-card: rgba(15, 23, 42, 0.72);
+      --reg-violet-primary: #7C3AED;
+      --reg-violet-bright: #8B5CF6;
+      --reg-violet-light: #A78BFA;
+      --reg-violet-soft: #C4B5FD;
+      --reg-violet-glow: rgba(124, 58, 237, 0.35);
+      --reg-indigo: #6366F1;
+      --reg-text-dark: #0F172A;
+      --reg-text-mid: #475569;
+      --reg-text-muted: #94A3B8;
+      --reg-border-light: #E2E8F0;
+      --reg-border-focus: #7C3AED;
+      --reg-grad-violet: linear-gradient(135deg, #7C3AED 0%, #6366F1 50%, #8B5CF6 100%);
+      --reg-grad-violet-hover: linear-gradient(135deg, #6D28D9 0%, #4F46E5 50%, #7C3AED 100%);
+    }
+
+    body {
+      background: #F8FAFC;
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Full Split-Screen Layout */
+    .auth-shell {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      background: #F8FAFC;
+      overflow-y: auto;
+    }
+
+    /* Left Visual Panel (Deep Navy & Ambient Violet Aurora) */
+    .auth-visual {
+      position: relative;
+      background: linear-gradient(155deg, #070B14 0%, #0B0F19 45%, #0F172A 100%);
+      padding: 44px 52px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Ambient Mesh Orbs */
+    .auth-visual::before {
+      content: "";
+      position: absolute;
+      top: -120px;
+      left: -80px;
+      width: 480px;
+      height: 480px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.32) 0%, rgba(99, 102, 241, 0.15) 50%, transparent 70%);
+      pointer-events: none;
+      filter: blur(50px);
+    }
+
+    .auth-visual::after {
+      content: "";
+      position: absolute;
+      bottom: -100px;
+      right: -80px;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.22) 0%, rgba(56, 189, 248, 0.1) 50%, transparent 70%);
+      pointer-events: none;
+      filter: blur(50px);
+    }
+
+    .auth-visual-top {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-light {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #FFFFFF;
+      font-size: 21px;
+      font-weight: 850;
+      letter-spacing: -0.025em;
+    }
+
+    .brand-light .brand-mark {
+      width: 36px;
+      height: 36px;
+      filter: drop-shadow(0 0 12px rgba(124, 58, 237, 0.6));
+    }
+
+    .auth-tag-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--reg-violet-soft);
+      background: rgba(124, 58, 237, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+      padding: 6px 14px;
+      border-radius: 999px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 0 16px rgba(124, 58, 237, 0.2);
+    }
+
+    /* Glassmorphic Feature Preview Card */
+    .auth-preview-card {
+      position: relative;
+      z-index: 2;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      padding: 22px 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 40px rgba(124, 58, 237, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      max-width: 460px;
+      margin: 28px 0;
+      transition: transform 0.3s ease;
+    }
+
+    .auth-preview-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(139, 92, 246, 0.35);
+    }
+
+    .auth-preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .auth-preview-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #F8FAFC;
+    }
+
+    .auth-pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10B981;
+      box-shadow: 0 0 10px #10B981;
+      animation: authDotPulse 2s infinite ease-in-out;
+    }
+
+    @keyframes authDotPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.6; }
+    }
+
+    .auth-preview-time {
+      font-size: 11.5px;
+      color: var(--reg-violet-soft);
+      font-weight: 600;
+      background: rgba(124, 58, 237, 0.15);
+      padding: 2px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(139, 92, 246, 0.25);
+    }
+
+    .auth-preview-items {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .auth-item-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 10px 14px;
+      border-radius: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .auth-item-card:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    .auth-item-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .auth-item-icon.success {
+      background: rgba(16, 185, 129, 0.18);
+      color: #34D399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .auth-item-icon.info {
+      background: rgba(124, 58, 237, 0.2);
+      color: var(--reg-violet-soft);
+      border: 1px solid rgba(139, 92, 246, 0.35);
+    }
+
+    .auth-item-icon.blue {
+      background: rgba(56, 189, 248, 0.18);
+      color: #38BDF8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .auth-item-body strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #F8FAFC;
+    }
+
+    .auth-item-body span {
+      display: block;
+      font-size: 11.5px;
+      color: #94A3B8;
+      margin-top: 1px;
+    }
+
+    .auth-badge-pill {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-left: auto;
+    }
+
+    .auth-badge-pill.success {
+      background: rgba(16, 185, 129, 0.18);
+      color: #6EE7B7;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .auth-badge-pill.info {
+      background: rgba(124, 58, 237, 0.2);
+      color: #C4B5FD;
+      border: 1px solid rgba(139, 92, 246, 0.4);
+    }
+
+    .auth-preview-footer {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #CBD5E1;
+    }
+
+    .auth-preview-footer .icon {
+      width: 15px;
+      height: 15px;
+      color: var(--reg-violet-bright);
+    }
+
+    .auth-visual-bottom {
+      position: relative;
+      z-index: 2;
+    }
+
+    .auth-visual-tagline {
+      font-size: 14px;
+      line-height: 1.55;
+      color: #CBD5E1;
+      margin-bottom: 18px;
+      max-width: 440px;
+    }
+
+    .auth-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .auth-stat-box {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 12px 14px;
+      border-radius: 12px;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+    }
+
+    .auth-stat-box:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    .auth-stat-box strong {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 20px;
+      font-weight: 850;
+      color: #FFFFFF;
+      background: linear-gradient(135deg, #FFFFFF 30%, #C4B5FD 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .auth-stat-box span {
+      display: block;
+      font-size: 11px;
+      color: #94A3B8;
+      margin-top: 3px;
+      font-weight: 500;
+    }
+
+    /* Right Form Panel (Clean, Premium SaaS Card) */
+    .auth-panel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 32px;
+      position: relative;
+      background: radial-gradient(circle at 100% 0%, rgba(124, 58, 237, 0.06) 0%, transparent 50%), #F8FAFC;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 480px;
+      background: #FFFFFF;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(124, 58, 237, 0.04);
+      border-radius: 20px;
+      padding: 34px 36px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .auth-card .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--reg-text-dark);
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    .auth-card .brand .brand-mark {
+      width: 32px;
+      height: 32px;
+      filter: drop-shadow(0 0 8px rgba(124, 58, 237, 0.4));
+    }
+
+    .auth-card h1 {
+      font-size: 26px;
+      font-weight: 850;
+      letter-spacing: -0.03em;
+      margin: 0 0 6px;
+      color: var(--reg-text-dark);
+      line-height: 1.2;
+    }
+
+    .auth-card .subtitle {
+      color: var(--reg-text-mid);
+      margin: 0 0 24px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* Form Fields & Rows */
+    .auth-card .field {
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .auth-card .field label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1E293B;
+      margin-bottom: 6px;
+    }
+
+    .auth-card .field label .req {
+      color: #EF4444;
+      margin-left: 2px;
+    }
+
+    .auth-card .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .auth-card .field-row .field {
+      margin-bottom: 0;
+    }
+
+    /* Input Shell */
+    .auth-card .input {
+      width: 100%;
+      box-sizing: border-box;
+      height: 44px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-family: inherit;
+      border-radius: 10px;
+      border: 1.5px solid #E2E8F0;
+      background: #FFFFFF;
+      color: #0F172A;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    .auth-card .input::placeholder {
+      color: #94A3B8;
+      font-weight: 400;
+    }
+
+    .auth-card .input:focus {
+      border-color: var(--reg-violet-primary);
+      box-shadow: 0 0 0 3.5px rgba(124, 58, 237, 0.14);
+      outline: none;
+    }
+
+    /* Password Input Wrapper & Toggle */
+    .password-field {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .password-field .input {
+      padding-right: 42px;
+    }
+
+    .password-field .toggle-visibility {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #64748B;
+      cursor: pointer;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .password-field .toggle-visibility:hover {
+      color: var(--reg-violet-primary);
+      background: rgba(124, 58, 237, 0.08);
+    }
+
+    .password-field .toggle-visibility .icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* ==========================================================================
+       Password Strength Feedback Meter
+       ========================================================================== */
+    .pw-strength-wrap {
+      margin-top: 7px;
+      display: none;
+    }
+
+    .pw-strength-wrap.active {
+      display: block;
+    }
+
+    .pw-strength-meter {
+      display: flex;
+      gap: 4px;
+      height: 4px;
+      margin-bottom: 5px;
+    }
+
+    .pw-strength-bar {
+      flex: 1;
+      height: 100%;
+      background: #E2E8F0;
+      border-radius: 2px;
+      transition: background 0.25s ease;
+    }
+
+    .pw-strength-bar.weak { background: #EF4444; }
+    .pw-strength-bar.fair { background: #F59E0B; }
+    .pw-strength-bar.good { background: #8B5CF6; }
+    .pw-strength-bar.strong { background: #10B981; }
+
+    .pw-strength-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+    }
+
+    .pw-strength-label {
+      font-weight: 600;
+      color: #64748B;
+    }
+
+    .pw-strength-label.weak { color: #EF4444; }
+    .pw-strength-label.fair { color: #D97706; }
+    .pw-strength-label.good { color: #7C3AED; }
+    .pw-strength-label.strong { color: #059669; }
+
+    .pw-match-indicator {
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .pw-match-indicator.match {
+      display: block;
+      color: #059669;
+    }
+
+    .pw-match-indicator.mismatch {
+      display: block;
+      color: #EF4444;
+    }
+
+    /* Error Messages */
+    .field .error-msg {
+      display: none;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: #EF4444;
+      margin-top: 5px;
+    }
+
+    .field.has-error .error-msg {
+      display: block;
+      animation: fadeInError 0.2s ease;
+    }
+
+    .field.has-error .input {
+      border-color: #EF4444;
+      background: #FFF5F5;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
+    @keyframes fadeInError {
+      from { opacity: 0; transform: translateY(-3px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Terms & Privacy Consent Checkbox Box */
+    .reg-consent-box {
+      background: #F8FAFC;
+      border: 1.5px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin: 18px 0;
+      transition: all 0.2s ease;
+    }
+
+    .reg-consent-box:hover {
+      border-color: #CBD5E1;
+      background: #F1F5F9;
+    }
+
+    .reg-consent-box.has-error {
+      border-color: #EF4444;
+      background: #FFF5F5;
+    }
+
+    .reg-consent-box .checkbox-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+      font-size: 12.5px;
+      color: #475569;
+      line-height: 1.45;
+    }
+
+    .reg-consent-box input[type="checkbox"] {
+      width: 17px;
+      height: 17px;
+      accent-color: var(--reg-violet-primary);
+      margin-top: 1.5px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .reg-consent-box a.link {
+      color: var(--reg-violet-primary);
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      transition: color 0.15s ease;
+    }
+
+    .reg-consent-box a.link:hover {
+      color: #5B21B6;
+    }
+
+    /* Prominent "Create Account" Button */
+    .btn-create-account {
+      width: 100%;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--reg-grad-violet);
+      color: #FFFFFF !important;
+      font-size: 15.5px;
+      font-weight: 700;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(124, 58, 237, 0.4);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-create-account:hover {
+      background: var(--reg-grad-violet-hover);
+      box-shadow: 0 8px 26px rgba(124, 58, 237, 0.55);
+      transform: translateY(-2px);
+    }
+
+    .btn-create-account:active {
+      transform: translateY(0);
+    }
+
+    .btn-create-account:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Footer Sign-in Link */
+    .auth-footer-link {
+      text-align: center;
+      margin: 20px 0 0;
+      font-size: 13.5px;
+      color: var(--reg-text-mid);
+    }
+
+    .auth-footer-link a {
+      color: var(--reg-violet-primary);
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .auth-footer-link a:hover {
+      color: #5B21B6;
+      text-decoration: underline;
+    }
+
+    /* Trust & Security Footnote */
+    .auth-security-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid #F1F5F9;
+      font-size: 11.5px;
+      color: #94A3B8;
+    }
+
+    .auth-security-badge .icon {
+      width: 13px;
+      height: 13px;
+      color: #10B981;
+    }
+
+    /* ==========================================================================
+       Terms & Privacy Modal Redesign
+       ========================================================================== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(11, 15, 25, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay .modal {
+      background: #FFFFFF;
+      border-radius: 18px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 680px;
+      max-height: 86vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+
+    .modal-overlay .modal-header {
+      padding: 18px 24px;
+      background: #0B0F19;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-overlay .modal-header h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+      color: #FFFFFF;
+    }
+
+    .modal-overlay .modal-close {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #CBD5E1;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .modal-overlay .modal-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #FFFFFF;
+    }
+
+    .modal-tabs {
+      display: flex;
+      background: #F1F5F9;
+      padding: 6px 20px 0;
+      border-bottom: 1px solid #E2E8F0;
+      gap: 8px;
+    }
+
+    .modal-tab-btn {
+      padding: 10px 16px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      font-size: 13px;
+      font-weight: 600;
+      color: #64748B;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .modal-tab-btn:hover {
+      color: var(--reg-violet-primary);
+    }
+
+    .modal-tab-btn.active {
+      color: var(--reg-violet-primary);
+      border-bottom-color: var(--reg-violet-primary);
+      background: #FFFFFF;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .modal-tab-pane {
+      display: none;
+    }
+
+    .modal-tab-pane.active {
+      display: block;
+    }
+
+    .legal-section {
+      margin-bottom: 20px;
+    }
+
+    .legal-section h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0F172A;
+      margin: 0 0 6px;
+    }
+
+    .legal-section p, .legal-section li {
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.6;
+      margin: 0 0 8px;
+    }
+
+    .legal-section ul {
+      padding-left: 20px;
+      margin-bottom: 10px;
+    }
+
+    .legal-badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(124, 58, 237, 0.1);
+      color: var(--reg-violet-primary);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    /* Responsive Breakdown */
+    @media (max-width: 960px) {
+      .auth-shell {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      .auth-visual {
+        display: none;
+      }
+      .auth-panel {
+        padding: 32px 20px;
+        min-height: 100vh;
+      }
+      .auth-card {
+        max-width: 100%;
+        padding: 28px 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      }
+    }
+
+    @media (max-width: 540px) {
+      .auth-card .field-row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .auth-card {
+        padding: 24px 18px;
+      }
+      .auth-card h1 {
+        font-size: 23px;
+      }
+    }
+  </style>
 </head>
 <body>
 
 <div class="auth-shell">
+  <!-- Left Split-Screen Panel: Dark Space & Ethereal Violet Branding -->
   <section class="auth-visual" aria-hidden="true">
     <div class="auth-visual-top">
-      <a href="index.html" class="brand brand-light" aria-label="RenewGaurd home" tabindex="-1">
+      <a href="index.html" class="brand-light" aria-label="RenewGaurd home" tabindex="-1">
         <img class="brand-mark" src="assets/logo.png" data-img-indigo="assets/logo.png" data-img-gold="assets/logo-gold.png" alt="RenewGaurd logo" />
         <span>RenewGaurd</span>
       </a>
-      <span class="auth-tag-pill"><i data-lucide="shield-check" class="icon" style="width:12px;height:12px;"></i> Real Email Alerts</span>
+      <span class="auth-tag-pill">
+        <i data-lucide="shield-check" class="icon" style="width:13px;height:13px;"></i>
+        Real Email Alerts
+      </span>
     </div>
 
     <!-- Interactive Glass Preview Card -->
@@ -31,39 +927,71 @@
         </div>
         <span class="auth-preview-time">Zero Setup Hassle</span>
       </div>
+
       <div class="auth-preview-items">
         <div class="auth-item-card">
-          <div class="auth-item-icon success"><i data-lucide="shield-check" class="icon"></i></div>
+          <div class="auth-item-icon success">
+            <i data-lucide="shield-check" class="icon"></i>
+          </div>
           <div class="auth-item-body">
             <strong>Real-time Expiry Watch</strong>
             <span>Contracts, Licenses, Certifications</span>
           </div>
           <span class="auth-badge-pill success">Active</span>
         </div>
+
         <div class="auth-item-card">
-          <div class="auth-item-icon info"><i data-lucide="mail" class="icon"></i></div>
+          <div class="auth-item-icon info">
+            <i data-lucide="mail" class="icon"></i>
+          </div>
           <div class="auth-item-body">
             <strong>Automated Email Dispatch</strong>
             <span>Nodemailer / Resend Engine</span>
           </div>
-          <span class="auth-badge-pill info">Scheduled</span>
+          <span class="auth-badge-pill info">Connected</span>
+        </div>
+
+        <div class="auth-item-card">
+          <div class="auth-item-icon blue">
+            <i data-lucide="history" class="icon"></i>
+          </div>
+          <div class="auth-item-body">
+            <strong>Immutable Audit Log</strong>
+            <span>Automatic Version History</span>
+          </div>
+          <span class="auth-badge-pill success">Protected</span>
         </div>
       </div>
+
       <div class="auth-preview-footer">
-        <i data-lucide="check-circle-2" class="icon"></i> Start tracking from a clean slate with your own data
+        <i data-lucide="check-circle-2" class="icon"></i>
+        <span>Start tracking from a clean slate with your own isolated data</span>
       </div>
     </div>
 
+    <!-- Bottom Stat Badges -->
     <div class="auth-visual-bottom">
-      <p class="auth-visual-tagline">Set up your workspace and take full control over renewal dates, costs, and automated reminders.</p>
+      <p class="auth-visual-tagline">
+        Set up your workspace and take full control over contract renewal dates, cost metrics, and automated alert dispatches.
+      </p>
       <div class="auth-stats-grid">
-        <div class="auth-stat-box"><strong>8</strong><span>Categories Tracked</span></div>
-        <div class="auth-stat-box"><strong>4x</strong><span>Reminder Stages</span></div>
-        <div class="auth-stat-box"><strong>0</strong><span>Missed Deadlines</span></div>
+        <div class="auth-stat-box">
+          <strong>8</strong>
+          <span>Categories Tracked</span>
+        </div>
+        <div class="auth-stat-box">
+          <strong>30-Day</strong>
+          <span>Predictive Warnings</span>
+        </div>
+        <div class="auth-stat-box">
+          <strong>100%</strong>
+          <span>Audit-Ready Logs</span>
+        </div>
       </div>
     </div>
   </section>
 
+  <!-- Right Split-Screen Panel: Premium Form Card -->
   <section class="auth-panel">
     <div class="auth-card">
       <a href="index.html" class="brand" aria-label="RenewGaurd home">
@@ -72,29 +1000,35 @@
       </a>
 
       <h1>Create your account</h1>
-      <p class="subtitle">Create your private renewal workspace.</p>
+      <p class="subtitle">Set up your private renewal and compliance workspace in seconds.</p>
 
       <form id="registerForm" novalidate>
+        <!-- Full Name -->
         <div class="field" id="regNameField">
           <label for="regName">Full name <span class="req">*</span></label>
           <input class="input" type="text" id="regName" placeholder="e.g. Alex Morgan" autocomplete="name" />
           <span class="error-msg">Enter your full name.</span>
         </div>
 
+        <!-- Email & Mobile Row -->
         <div class="field-row">
           <div class="field" id="regEmailField">
             <label for="regEmail">Work email <span class="req">*</span></label>
             <input class="input" type="email" id="regEmail" placeholder="you@company.com" autocomplete="email" />
-            <span class="error-msg">Enter a valid email.</span>
+            <span class="error-msg">Enter a valid email address.</span>
           </div>
 
           <div class="field" id="regMobileField">
-            <label for="regMobile">Mobile number <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+            <label for="regMobile">
+              <span>Mobile number</span>
+              <span style="color:#94A3B8; font-weight:400; font-size:11.5px;">(optional)</span>
+            </label>
             <input class="input" type="tel" id="regMobile" placeholder="+1 555 0102" autocomplete="tel" />
-            <span class="error-msg">Enter a valid mobile.</span>
+            <span class="error-msg">Enter a valid mobile number.</span>
           </div>
         </div>
 
+        <!-- Password & Confirm Password Row -->
         <div class="field-row">
           <div class="field" id="regPasswordField">
             <label for="regPassword">Password <span class="req">*</span></label>
@@ -104,7 +1038,20 @@
                 <i data-lucide="eye" class="icon"></i>
               </button>
             </div>
-            <span class="error-msg">Min. 8 characters.</span>
+            <!-- Dynamic Real-time Password Strength Meter -->
+            <div class="pw-strength-wrap" id="pwStrengthWrap">
+              <div class="pw-strength-meter">
+                <span class="pw-strength-bar" id="strBar1"></span>
+                <span class="pw-strength-bar" id="strBar2"></span>
+                <span class="pw-strength-bar" id="strBar3"></span>
+                <span class="pw-strength-bar" id="strBar4"></span>
+              </div>
+              <div class="pw-strength-meta">
+                <span class="pw-strength-label" id="pwStrengthLabel">Strength: Enter password</span>
+                <span style="color:#94A3B8;">Min 8 chars, letter &amp; number</span>
+              </div>
+            </div>
+            <span class="error-msg">Use at least 8 characters with letters and numbers.</span>
           </div>
 
           <div class="field" id="regConfirmField">
@@ -115,35 +1062,50 @@
                 <i data-lucide="eye" class="icon"></i>
               </button>
             </div>
+            <div class="pw-match-indicator" id="pwMatchIndicator"></div>
             <span class="error-msg">Passwords must match.</span>
           </div>
         </div>
 
-        <div class="field" id="regTermsField" style="margin-bottom:12px;">
-          <label class="checkbox-row">
+        <!-- Terms & Privacy Policy Consent Checkbox Box -->
+        <div class="field reg-consent-box" id="regTermsField">
+          <label class="checkbox-row" for="regTerms">
             <input type="checkbox" id="regTerms" />
-            <span>I agree to the <a class="link" href="#" id="openTermsLink">Terms &amp; Conditions</a> &amp; <a class="link" href="#" id="openPrivacyLink">Privacy Policy</a></span>
+            <span>
+              I agree to the <a class="link" href="#" id="openTermsLink">Terms &amp; Conditions</a> and <a class="link" href="#" id="openPrivacyLink">Privacy Policy</a>
+            </span>
           </label>
           <span class="error-msg">You must accept the Terms &amp; Privacy Policy to continue.</span>
         </div>
 
-        <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+        <!-- Prominent Create Account Button -->
+        <button type="submit" class="btn-create-account" id="createAccountBtn">
+          <span>Create Account</span>
+          <i data-lucide="arrow-right" class="icon" style="width:16px;height:16px;"></i>
+        </button>
       </form>
 
-      <p class="auth-footer-link">Already have an account? <a href="login.html">Sign in</a></p>
+      <p class="auth-footer-link">
+        Already have an account? <a href="login.html">Sign in</a>
+      </p>
+
+      <div class="auth-security-badge">
+        <i data-lucide="lock" class="icon"></i>
+        <span>256-bit Encrypted &bull; ISO &amp; SOC-2 Compliant Architecture</span>
+      </div>
     </div>
   </section>
 </div>
 
 <!-- Terms & Privacy Policy Modal -->
 <div class="modal-overlay" id="termsPrivacyModal" role="dialog" aria-modal="true" aria-labelledby="termsModalTitle" style="display:none;">
-  <div class="modal modal-lg" style="max-width: 680px; max-height: 85vh; display: flex; flex-direction: column;">
-    <div class="modal-header" style="flex-shrink: 0;">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <i data-lucide="shield-check" class="icon" style="color:var(--accent); width:22px; height:22px;"></i>
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <i data-lucide="shield-check" class="icon" style="color:#A78BFA; width:22px; height:22px;"></i>
         <div>
-          <h3 id="termsModalTitle" style="margin:0; font-size:16px;">Legal Terms &amp; Privacy Policy</h3>
-          <span style="font-size:12px; color:var(--text-mid);">RenewGaurd Enterprise Governance &amp; Compliance</span>
+          <h3 id="termsModalTitle">Legal Terms &amp; Privacy Policy</h3>
+          <span style="font-size:12px; color:#94A3B8;">RenewGaurd Enterprise Governance &amp; Data Protection</span>
         </div>
       </div>
       <button type="button" class="modal-close" data-close-modal="termsPrivacyModal" aria-label="Close modal">
@@ -164,13 +1126,13 @@
     </div>
 
     <!-- Modal Body (Scrollable) -->
-    <div class="modal-body" style="flex:1; overflow-y:auto; padding: 20px 22px;">
+    <div class="modal-body" style="flex:1; overflow-y:auto; padding: 22px 26px;">
       <!-- Tab 1: Terms & Conditions -->
       <div class="modal-tab-pane active" id="tabTerms">
         <div class="legal-section">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <span class="legal-badge-pill"><i data-lucide="clock" style="width:12px;height:12px;"></i> Last updated: October 2026</span>
-            <span style="font-size:11px; color:var(--text-dim); font-weight:600;">Version 2.4.0</span>
+            <span style="font-size:11.5px; color:#94A3B8; font-weight:600;">Version 2.4.0</span>
           </div>
           <h4>1. Acceptance of Terms</h4>
           <p>By registering an account, accessing, or using RenewGaurd, you agree to be legally bound by these Terms &amp; Conditions and our acceptable use policies. If you are registering on behalf of a company, enterprise, or other entity, you represent and warrant that you hold appropriate authority to bind that entity to these terms.</p>
@@ -188,12 +1150,12 @@
 
         <div class="legal-section">
           <h4>4. Account Security &amp; Credentials</h4>
-          <p>Users must provide accurate, current, and complete registration details. You are responsible for safeguarding your login credentials and preventing unauthorized access to your workspace. Any suspected credential compromise or unauthorized access must be reported to the workspace Primary Administrator immediately.</p>
+          <p>Users must provide accurate, current, and complete registration details. You are responsible for safeguarding your login credentials and preventing unauthorized access to your workspace. Any suspected credential compromise or unauthorized access must be reported immediately.</p>
         </div>
 
         <div class="legal-section">
           <h4>5. Data Ownership &amp; System Integrity</h4>
-          <p>You retain full intellectual property ownership of all contract metadata, proprietary vendor records, and financial renewal figures uploaded to your workspace. You agree not to upload malicious scripts, attempt unauthorized database injection, or interfere with background dispatch workers.</p>
+          <p>You retain full intellectual property ownership of all contract metadata, proprietary vendor records, and financial renewal figures uploaded to your workspace. You agree not to upload malicious scripts or interfere with background dispatch workers.</p>
         </div>
 
         <div class="legal-section">
@@ -205,9 +1167,9 @@
       <!-- Tab 2: Privacy Policy -->
       <div class="modal-tab-pane" id="tabPrivacy">
         <div class="legal-section">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
             <span class="legal-badge-pill"><i data-lucide="shield" style="width:12px;height:12px;"></i> Privacy Guaranteed</span>
-            <span style="font-size:11px; color:var(--text-dim); font-weight:600;">Compliant with Modern Privacy Standards</span>
+            <span style="font-size:11.5px; color:#94A3B8; font-weight:600;">Compliant with Modern Privacy Standards</span>
           </div>
           <h4>1. Information We Collect</h4>
           <p>RenewGaurd collects only information necessary to deliver contract renewal tracking and workspace collaboration:</p>
@@ -240,30 +1202,25 @@
 
         <div class="legal-section">
           <h4>4. Third-Party Sharing &amp; Data Selling</h4>
-          <p>We do not sell, rent, monetize, or disclose your corporate contract data, user contacts, or renewal records to advertisers or third-party brokers. Data is transmitted solely to operational subprocessors (such as your organization's configured SMTP mail server) necessary for system notifications.</p>
+          <p>We do not sell, rent, monetize, or disclose your corporate contract data, user contacts, or renewal records to advertisers or third-party brokers. Data is transmitted solely to operational subprocessors necessary for system notifications.</p>
         </div>
 
         <div class="legal-section">
           <h4>5. Data Retention &amp; User Rights</h4>
-          <p>You have the right to inspect, export (via CSV/ICS/JSON), update, or delete your data at any time. When an account or renewal record is permanently deleted, related records and associated reminder queues are deleted from the active datastore.</p>
-        </div>
-
-        <div class="legal-section">
-          <h4>6. Contact &amp; Governance Inquiries</h4>
-          <p>For privacy inquiries, data deletion requests, or compliance auditing questions, you can export or delete all of your data yourself from Settings.</p>
+          <p>You have the right to inspect, export (via CSV/ICS/JSON), update, or delete your data at any time. When an account is deleted, related records and associated reminder queues are purged.</p>
         </div>
       </div>
     </div>
 
     <!-- Modal Footer -->
-    <div class="modal-footer" style="padding:14px 22px; margin-top:0; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:var(--bg-surface-2); flex-shrink:0;">
-      <span style="font-size:12px; color:var(--text-dim); display:flex; align-items:center; gap:6px;">
-        <i data-lucide="check-circle" class="icon" style="width:13px;height:13px;color:var(--accent);"></i>
+    <div class="modal-footer" style="padding:16px 24px; border-top:1px solid #E2E8F0; display:flex; justify-content:space-between; align-items:center; background:#F8FAFC; flex-shrink:0;">
+      <span style="font-size:12px; color:#64748B; display:flex; align-items:center; gap:6px;">
+        <i data-lucide="check-circle" class="icon" style="width:14px;height:14px;color:#7C3AED;"></i>
         Review both sections before accepting
       </span>
-      <div style="display:flex; gap:8px;">
-        <button type="button" class="btn btn-secondary" data-close-modal="termsPrivacyModal">Close</button>
-        <button type="button" class="btn btn-primary" id="acceptLegalTermsBtn">
+      <div style="display:flex; gap:10px;">
+        <button type="button" class="btn btn-secondary" data-close-modal="termsPrivacyModal" style="padding:8px 16px; border-radius:8px;">Close</button>
+        <button type="button" class="btn btn-primary" id="acceptLegalTermsBtn" style="background:var(--reg-grad-violet); color:#fff; padding:8px 18px; border-radius:8px; border:none; font-weight:600; cursor:pointer;">
           <i data-lucide="check" class="icon" style="width:14px;height:14px;"></i>
           I Agree &amp; Accept
         </button>
@@ -273,22 +1230,107 @@
 </div>
 
 <script src="js/config.js"></script>
-  <script src="js/app.js"></script>
+<script src="js/app.js"></script>
 <script src="js/auth.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
-<script>RTS.refreshIcons();</script>
 <script>
-/* If the stylesheet is missing, the page was opened without its css/js folders
-   (e.g. double-clicked from inside the .zip). Show a clear fix. */
-window.addEventListener("load", function () {
-  var ok = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
-  if (ok) return;
-  var b = document.createElement("div");
-  b.setAttribute("style", "position:fixed;top:0;left:0;right:0;z-index:99999;background:#fef3c7;color:#78350f;border-bottom:2px solid #f59e0b;padding:14px 18px;font:15px/1.5 Arial,sans-serif;");
-  b.innerHTML = "<b>Some files are missing.</b> This page was opened from inside the .zip, so the css/js/assets folders were not extracted. " +
-    "Fix: right-click the .zip &rarr; <b>Extract All</b>, then open the extracted folder and double-click <b>start.bat</b> (or open index.html from there).";
-  document.body.appendChild(b);
-});
+  if (window.lucide) {
+    lucide.createIcons();
+  }
 </script>
+
+<!-- Real-time Password Strength & Match Feedback Logic -->
+<script>
+(function() {
+  const pwInput = document.getElementById("regPassword");
+  const confirmInput = document.getElementById("regConfirm");
+  const strengthWrap = document.getElementById("pwStrengthWrap");
+  const labelEl = document.getElementById("pwStrengthLabel");
+  const bars = [
+    document.getElementById("strBar1"),
+    document.getElementById("strBar2"),
+    document.getElementById("strBar3"),
+    document.getElementById("strBar4")
+  ];
+  const matchIndicator = document.getElementById("pwMatchIndicator");
+
+  function evaluateStrength(pw) {
+    if (!pw) return 0;
+    let score = 0;
+    if (pw.length >= 8) score++;
+    if (/[a-z]/.test(pw) && /[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^a-zA-Z0-9]/.test(pw) || pw.length >= 12) score++;
+    return score;
+  }
+
+  function updateStrengthUI() {
+    const val = pwInput ? pwInput.value : "";
+    if (!val) {
+      if (strengthWrap) strengthWrap.classList.remove("active");
+      return;
+    }
+    if (strengthWrap) strengthWrap.classList.add("active");
+
+    const score = evaluateStrength(val);
+    bars.forEach(b => {
+      b.className = "pw-strength-bar";
+    });
+
+    if (score === 1) {
+      bars[0].classList.add("weak");
+      labelEl.textContent = "Strength: Weak (Needs 8+ chars & numbers)";
+      labelEl.className = "pw-strength-label weak";
+    } else if (score === 2) {
+      bars[0].classList.add("fair");
+      bars[1].classList.add("fair");
+      labelEl.textContent = "Strength: Fair (Good progress)";
+      labelEl.className = "pw-strength-label fair";
+    } else if (score === 3) {
+      bars[0].classList.add("good");
+      bars[1].classList.add("good");
+      bars[2].classList.add("good");
+      labelEl.textContent = "Strength: Good (Secure password)";
+      labelEl.className = "pw-strength-label good";
+    } else if (score >= 4) {
+      bars[0].classList.add("strong");
+      bars[1].classList.add("strong");
+      bars[2].classList.add("strong");
+      bars[3].classList.add("strong");
+      labelEl.textContent = "Strength: Strong (Excellent)";
+      labelEl.className = "pw-strength-label strong";
+    }
+    checkMatch();
+  }
+
+  function checkMatch() {
+    if (!confirmInput || !matchIndicator) return;
+    const p1 = pwInput ? pwInput.value : "";
+    const p2 = confirmInput.value;
+
+    if (!p2) {
+      matchIndicator.className = "pw-match-indicator";
+      matchIndicator.textContent = "";
+      return;
+    }
+
+    if (p1 === p2) {
+      matchIndicator.className = "pw-match-indicator match";
+      matchIndicator.innerHTML = '<span style="display:inline-flex;align-items:center;gap:4px;">✓ Passwords match</span>';
+    } else {
+      matchIndicator.className = "pw-match-indicator mismatch";
+      matchIndicator.textContent = "Passwords do not match yet";
+    }
+  }
+
+  if (pwInput) {
+    pwInput.addEventListener("input", updateStrengthUI);
+  }
+  if (confirmInput) {
+    confirmInput.addEventListener("input", checkMatch);
+  }
+})();
+</script>
+
 </body>
 </html>
