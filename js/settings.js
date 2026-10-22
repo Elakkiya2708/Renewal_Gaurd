@@ -27,11 +27,136 @@
     }
   }
 
+  function processProfileImage(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const canvas = document.createElement("canvas");
+            const maxDim = 360;
+            const size = Math.min(maxDim, Math.max(img.width, img.height));
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext("2d");
+
+            // Center square crop
+            const minSide = Math.min(img.width, img.height);
+            const sx = (img.width - minSide) / 2;
+            const sy = (img.height - minSide) / 2;
+
+            ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.88);
+            resolve(dataUrl);
+          } catch (err) {
+            reject(err);
+          }
+        };
+        img.onerror = () => reject(new Error("Unable to parse the selected image."));
+        img.src = e.target.result;
+      };
+      reader.onerror = () => reject(new Error("Failed to read the file."));
+      reader.readAsDataURL(file);
+    });
+  }
+
   function loadProfile() {
     const user = RTS.auth.getCurrentUser();
-    document.getElementById("profileName").value = user.fullName || "";
-    document.getElementById("profileMobile").value = user.mobile || "";
-    document.getElementById("profileEmail").value = user.email || "";
+    const nameInput = document.getElementById("profileName");
+    const mobileInput = document.getElementById("profileMobile");
+    const emailInput = document.getElementById("profileEmail");
+    if (nameInput) nameInput.value = user.fullName || "";
+    if (mobileInput) mobileInput.value = user.mobile || "";
+    if (emailInput) emailInput.value = user.email || "";
+
+    const preview = document.getElementById("settingsAvatarPreview");
+    const removeBtn = document.getElementById("removeAvatarBtn");
+    const uploadText = document.getElementById("uploadAvatarText");
+
+    if (preview) {
+      if (user.avatar) {
+        preview.innerHTML = `<img src="${user.avatar}" alt="${user.fullName || 'User'}" class="avatar-img" />`;
+        preview.classList.add("has-avatar-img");
+        if (removeBtn) removeBtn.style.display = "inline-flex";
+        if (uploadText) uploadText.textContent = "Change Photo";
+      } else {
+        const parts = (user.fullName || "User").trim().split(/\s+/);
+        const initials = ((parts[0] || "")[0] + (parts[1] ? parts[1][0] : "")).toUpperCase() || "U";
+        preview.textContent = initials;
+        preview.classList.remove("has-avatar-img");
+        if (removeBtn) removeBtn.style.display = "none";
+        if (uploadText) uploadText.textContent = "Upload Photo";
+      }
+    }
+  }
+
+  function wireProfilePhoto() {
+    const fileInput = document.getElementById("profilePicInput");
+    const removeBtn = document.getElementById("removeAvatarBtn");
+    const previewWrap = document.getElementById("avatarUploaderTrigger");
+
+    if (previewWrap && fileInput) {
+      previewWrap.addEventListener("click", (e) => {
+        // Prevent double triggers if clicking on label or input directly
+        if (e.target.tagName !== "INPUT" && e.target.tagName !== "LABEL" && !e.target.closest("label")) {
+          fileInput.click();
+        }
+      });
+    }
+
+    if (fileInput) {
+      fileInput.addEventListener("change", async (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+          RTS.toast("Please select a valid image file (PNG, JPG, or WEBP).", "error");
+          fileInput.value = "";
+          return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+          RTS.toast("Selected image exceeds 5MB limit. Please choose a smaller file.", "error");
+          fileInput.value = "";
+          return;
+        }
+
+        try {
+          RTS.toast("Processing photo...", "info");
+          const dataUrl = await processProfileImage(file);
+
+          // Update profile with new avatar
+          const res = await RTS.auth.updateProfile({ avatar: dataUrl });
+          if (!res.ok) {
+            RTS.toast(res.error || "Failed to update profile picture.", "error");
+            return;
+          }
+
+          loadProfile();
+          RTS.initLayout();
+          RTS.toast("Profile picture updated successfully!", "success");
+        } catch (err) {
+          RTS.toast("Error processing image: " + err.message, "error");
+        } finally {
+          fileInput.value = "";
+        }
+      });
+    }
+
+    if (removeBtn) {
+      removeBtn.addEventListener("click", async () => {
+        if (!confirm("Are you sure you want to remove your profile picture?")) return;
+        const res = await RTS.auth.updateProfile({ avatar: null });
+        if (!res.ok) {
+          RTS.toast(res.error || "Failed to remove profile picture.", "error");
+          return;
+        }
+        loadProfile();
+        RTS.initLayout();
+        RTS.toast("Profile picture removed successfully.", "success");
+      });
+    }
   }
 
   function wireProfileForm() {
@@ -43,6 +168,7 @@
       const result = await RTS.auth.updateProfile({ fullName: name, mobile: document.getElementById("profileMobile").value.trim() });
       if (!result.ok) return RTS.toast(result.error, "error");
       RTS.toast("Profile updated successfully.", "success");
+      loadProfile();
       RTS.initLayout(); // refresh topbar name/initials
     });
   }
@@ -395,6 +521,7 @@
     wireTabs();
     loadProfile();
     wireProfileForm();
+    wireProfilePhoto();
     loadApplicationSettings();
     loadReminderSettings();
     loadNotificationSettings();

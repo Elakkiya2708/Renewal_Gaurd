@@ -1150,11 +1150,16 @@
     }
   }
 
-  async function updateProfile({ fullName, mobile }) {
+  async function updateProfile({ fullName, mobile, avatar }) {
     try {
-      const { res, data } = await postJSON("/api/auth/me", { fullName, mobile }, "PUT");
+      const payload = {};
+      if (fullName !== undefined) payload.fullName = fullName;
+      if (mobile !== undefined) payload.mobile = mobile;
+      if (avatar !== undefined) payload.avatar = avatar;
+      const { res, data } = await postJSON("/api/auth/me", payload, "PUT");
       if (!res.ok || !data.ok) return { ok: false, error: data.error || "Could not update profile." };
       setCurrentUser(data.user);
+      renderTopbarUser();
       return { ok: true, user: data.user };
     } catch (e) {
       return { ok: false, error: "Unable to connect to the server." };
@@ -1218,7 +1223,7 @@
 
   function getCurrentUser() {
     const user = readJSON(STORAGE_KEYS.USER, null);
-    return user && user.email ? user : { id: "", fullName: "", email: "", mobile: "" };
+    return user && user.email ? user : { id: "", fullName: "", email: "", mobile: "", avatar: null };
   }
 
   function setCurrentUser(data) {
@@ -1436,9 +1441,27 @@
 
   function renderTopbarUser() {
     const user = getCurrentUser();
-    document.querySelectorAll("[data-user-name]").forEach((el) => (el.textContent = user.fullName));
-    document.querySelectorAll("[data-user-email]").forEach((el) => (el.textContent = user.email));
-    document.querySelectorAll("[data-user-initials]").forEach((el) => (el.textContent = initials(user.fullName)));
+    document.querySelectorAll("[data-user-name]").forEach((el) => (el.textContent = user.fullName || "User"));
+    document.querySelectorAll("[data-user-email]").forEach((el) => (el.textContent = user.email || ""));
+    document.querySelectorAll("[data-user-initials]").forEach((el) => {
+      if (user.avatar) {
+        el.innerHTML = `<img src="${user.avatar}" alt="${user.fullName || 'User'}" class="avatar-img" />`;
+        el.classList.add("has-avatar-img");
+      } else {
+        el.textContent = initials(user.fullName);
+        el.classList.remove("has-avatar-img");
+      }
+    });
+    const profLarge = document.getElementById("profileAvatarLarge");
+    if (profLarge) {
+      if (user.avatar) {
+        profLarge.innerHTML = `<img src="${user.avatar}" alt="${user.fullName || 'User'}" class="avatar-img" />`;
+        profLarge.classList.add("has-avatar-img");
+      } else {
+        profLarge.textContent = initials(user.fullName);
+        profLarge.classList.remove("has-avatar-img");
+      }
+    }
     document.querySelectorAll(".role-pill-badge").forEach((el) => el.remove());
 
     // Ensure Settings link in dropdown panel and remove redundant profile link

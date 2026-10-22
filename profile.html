@@ -85,8 +85,13 @@
         <!-- Left: User Identity Card -->
         <div class="card">
           <div style="text-align:center;padding:24px 16px 16px;border-bottom:1px solid var(--border-color);">
-            <div class="avatar" id="profileAvatarLarge" style="width:72px;height:72px;font-size:24px;margin:0 auto 12px;box-shadow:var(--shadow-md);">
-              U
+            <div class="avatar-uploader-wrap" style="margin:0 auto 12px;display:inline-block;" title="Change profile photo">
+              <div class="avatar avatar-xl profile-avatar-preview" id="profileAvatarLarge">
+                U
+              </div>
+              <a href="settings.html" class="avatar-edit-badge" title="Change profile photo" aria-label="Change profile photo">
+                <i data-lucide="camera" class="icon"></i>
+              </a>
             </div>
             <h2 id="profileNameDisplay" style="font-size:18px;margin:0 0 4px;color:var(--text);">User Name</h2>
             <p id="profileEmailDisplay" style="font-size:13px;color:var(--text-muted);margin:0 0 12px;">user@example.com</p>
@@ -203,7 +208,16 @@
     
     // Large avatar
     const initials = (user.fullName || "U").split(" ").map(p => p[0]).slice(0, 2).join("").toUpperCase();
-    document.getElementById("profileAvatarLarge").textContent = initials;
+    const profAvatar = document.getElementById("profileAvatarLarge");
+    if (profAvatar) {
+      if (user.avatar) {
+        profAvatar.innerHTML = `<img src="${user.avatar}" alt="${user.fullName || 'User'}" class="avatar-img" />`;
+        profAvatar.classList.add("has-avatar-img");
+      } else {
+        profAvatar.textContent = initials;
+        profAvatar.classList.remove("has-avatar-img");
+      }
+    }
 
     const renewals = RTS.data.getRenewals();
     document.getElementById("profileAssignedCount").textContent = `${renewals.length} ${renewals.length === 1 ? "record" : "records"}`;

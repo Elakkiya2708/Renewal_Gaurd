@@ -46,7 +46,7 @@ function rateLimit(max, windowMs) {
   };
 }
 
-const publicUser = (u) => ({ id: u.id, fullName: u.fullName, email: u.email, mobile: u.mobile || "", createdAt: u.createdAt });
+const publicUser = (u) => ({ id: u.id, fullName: u.fullName, email: u.email, mobile: u.mobile || "", avatar: u.avatar || null, createdAt: u.createdAt });
 const generateToken = (u) => jwt.sign({ id: u.id, email: u.email }, config.JWT_SECRET, { expiresIn: config.JWT_EXPIRES_IN });
 
 // Middleware: verify Bearer JWT, load the user from the database, attach req.user
@@ -107,13 +107,15 @@ router.get("/me", authenticateToken, async (req, res) => {
   res.json({ ok: true, user: publicUser(user) });
 });
 
-// PUT /api/auth/me — update own profile (name / mobile only)
+// PUT /api/auth/me — update own profile (name / mobile / avatar)
 router.put("/me", authenticateToken, async (req, res) => {
   try {
     const user = await db.getUserById(req.user.id);
-    const fullName = String((req.body && req.body.fullName) || user.fullName).trim();
+    const fullName = req.body && req.body.fullName !== undefined ? String(req.body.fullName).trim() : user.fullName;
     if (!fullName) return res.status(400).json({ ok: false, error: "Full name is required." });
-    const saved = await db.saveUser({ ...user, fullName, mobile: String((req.body && req.body.mobile) ?? user.mobile ?? "").trim() });
+    const mobile = req.body && req.body.mobile !== undefined ? String(req.body.mobile).trim() : (user.mobile || "");
+    const avatar = req.body && ("avatar" in req.body) ? req.body.avatar : (user.avatar || null);
+    const saved = await db.saveUser({ ...user, fullName, mobile, avatar });
     res.json({ ok: true, user: publicUser(saved) });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });

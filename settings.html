@@ -91,11 +91,30 @@
           <!-- Profile -->
           <div class="settings-panel active card" id="panel-profile">
             <div class="card-header"><h3>User Profile</h3></div>
-            <div style="display:flex;align-items:center;gap:16px;margin-bottom:22px;">
-              <div class="avatar avatar-lg" data-user-initials>—</div>
-              <div>
-                <strong style="display:block;font-size:15px;" data-user-name>User</strong>
-                <span class="text-mid" style="font-size:12.5px;" data-user-email>—</span>
+            <div class="profile-avatar-row">
+              <div class="avatar-uploader-wrap" id="avatarUploaderTrigger" title="Click to upload profile photo">
+                <div class="avatar avatar-xl profile-avatar-preview" id="settingsAvatarPreview" data-user-initials>—</div>
+                <label for="profilePicInput" class="avatar-edit-badge" title="Upload or change photo" aria-label="Upload or change photo">
+                  <i data-lucide="camera" class="icon"></i>
+                </label>
+                <input type="file" id="profilePicInput" accept="image/png, image/jpeg, image/jpg, image/webp" style="display:none;" />
+              </div>
+              <div class="profile-avatar-meta">
+                <div class="profile-avatar-name-row">
+                  <strong class="profile-display-name" data-user-name>User</strong>
+                  <span class="profile-display-email" data-user-email>—</span>
+                </div>
+                <div class="profile-avatar-actions">
+                  <label for="profilePicInput" class="btn btn-sm btn-secondary profile-upload-btn" id="uploadAvatarBtn">
+                    <i data-lucide="upload" class="icon"></i>
+                    <span id="uploadAvatarText">Upload Photo</span>
+                  </label>
+                  <button type="button" class="btn btn-sm btn-ghost profile-remove-btn" id="removeAvatarBtn" style="display:none;">
+                    <i data-lucide="trash-2" class="icon"></i>
+                    <span>Remove Photo</span>
+                  </button>
+                </div>
+                <span class="profile-avatar-hint">JPG, PNG, or WEBP &bull; Max 5MB &bull; Square cropped automatically</span>
               </div>
             </div>
             <form id="profileForm" novalidate>

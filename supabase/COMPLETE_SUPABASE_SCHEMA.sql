@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS app_users (
   password_hash VARCHAR(255),
   password VARCHAR(255),
   mobile VARCHAR(50),
+  avatar TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
