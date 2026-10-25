@@ -1393,12 +1393,6 @@
       "[data-role], .sidebar-team-link, .sidebar-team-label, a[href='team.html'], a[href='audit.html'], a[href='assigned.html'], a[href*='assigned=me'], a[href*='#invite']"
     ).forEach((el) => el.remove());
     initSidebarActive();
-    nav.querySelectorAll(".nav-link").forEach((link) => {
-      link.addEventListener("click", function () {
-        nav.querySelectorAll(".nav-link").forEach((l) => l.classList.remove("active"));
-        this.classList.add("active");
-      });
-    });
     refreshIcons();
   }
 
