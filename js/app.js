@@ -1658,27 +1658,10 @@
   }
 
   function initLanguageToggle() {
-    const actions = document.querySelector(".topbar-actions");
-    if (!actions) return;
-    let toggleBtn = document.getElementById("langToggleBtn");
-    if (!toggleBtn) {
-      toggleBtn = document.createElement("button");
-      toggleBtn.id = "langToggleBtn";
-      toggleBtn.className = "lang-toggle-btn";
-      toggleBtn.type = "button";
-      actions.insertBefore(toggleBtn, actions.firstChild);
+    const existing = document.getElementById("langToggleBtn");
+    if (existing) {
+      existing.remove();
     }
-    const current = getLanguage();
-    toggleBtn.innerHTML =
-      current === "en"
-        ? '<span class="lang-globe">🌐</span> <span class="lang-text">தமிழ்</span>'
-        : '<span class="lang-globe">🌐</span> <span class="lang-text">English</span>';
-    toggleBtn.title = current === "en" ? "தமிழுக்கு மாற்றுக (Switch to Tamil)" : "Switch to English";
-    toggleBtn.onclick = () => {
-      const next = getLanguage() === "en" ? "ta" : "en";
-      setLanguage(next);
-      showToast(next === "ta" ? "தமிழ் மொழி தேர்ந்தெடுக்கப்பட்டது" : "Switched to English", "info");
-    };
   }
 
   /* ------------------------------------------------------------------ */
@@ -1813,14 +1796,6 @@
         action: () => {
           exportICS("all-renewals.ics", getRenewals());
           showToast("Exported renewals calendar (.ics)", "success");
-        },
-      },
-      {
-        title: lang === "en" ? "Switch to தமிழ் (Tamil)" : "Switch to English",
-        sub: "Toggle bilingual interface",
-        icon: "globe",
-        action: () => {
-          setLanguage(lang === "en" ? "ta" : "en");
         },
       },
     ];
