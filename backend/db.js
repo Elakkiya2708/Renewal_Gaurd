@@ -7,15 +7,63 @@
 
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
 const crypto = require("crypto");
 const { supabase, isConfigured } = require("./supabaseClient");
 const config = require("./config");
 
 const DEFAULT_DATA_DIR = path.join(__dirname, "..", "data");
-const DATA_DIR = config.DATA_DIR || DEFAULT_DATA_DIR;
-const LOCAL_STORE_FILE = config.DATA_FILE || path.join(DATA_DIR, "store.json");
 const SEED_FILE = path.join(DEFAULT_DATA_DIR, "seed.json");
-const UPLOAD_DIR = path.join(DATA_DIR, "uploads");
+
+let activeDataDir = null;
+let activeStoreFile = null;
+let activeUploadDir = null;
+let memoryStore = null;
+
+function resolveStorage() {
+  if (activeDataDir && activeStoreFile && activeUploadDir) {
+    return { dataDir: activeDataDir, storeFile: activeStoreFile, uploadDir: activeUploadDir };
+  }
+
+  const preferredDir = config.DATA_DIR || DEFAULT_DATA_DIR;
+  const candidates = [
+    preferredDir,
+    DEFAULT_DATA_DIR,
+    path.join(os.tmpdir(), "renewgaurd_data"),
+    os.tmpdir(),
+  ];
+
+  for (const dir of candidates) {
+    try {
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      const testFile = path.join(dir, `.write_check_${process.pid}_${Date.now()}`);
+      fs.writeFileSync(testFile, "ok", "utf-8");
+      fs.unlinkSync(testFile);
+
+      activeDataDir = dir;
+      activeStoreFile =
+        config.DATA_FILE && path.dirname(config.DATA_FILE) === dir
+          ? config.DATA_FILE
+          : path.join(dir, "store.json");
+      activeUploadDir = path.join(dir, "uploads");
+      if (!fs.existsSync(activeUploadDir)) fs.mkdirSync(activeUploadDir, { recursive: true });
+
+      if (dir !== preferredDir) {
+        console.warn(`[Storage Fallback] Preferred DATA_DIR "${preferredDir}" was not writable. Using verified writable directory: "${activeDataDir}".`);
+      } else {
+        console.log(`[Storage] Verified writable data directory: "${activeDataDir}" (store: "${activeStoreFile}")`);
+      }
+      return { dataDir: activeDataDir, storeFile: activeStoreFile, uploadDir: activeUploadDir };
+    } catch (err) {
+      console.warn(`[Storage Warning] Directory "${dir}" is not writable (${err.message}). Trying fallback...`);
+    }
+  }
+
+  activeDataDir = DEFAULT_DATA_DIR;
+  activeStoreFile = path.join(DEFAULT_DATA_DIR, "store.json");
+  activeUploadDir = path.join(DEFAULT_DATA_DIR, "uploads");
+  return { dataDir: activeDataDir, storeFile: activeStoreFile, uploadDir: activeUploadDir };
+}
 
 const DEFAULT_SETTINGS = () => ({
   emailNotificationsEnabled: true,
@@ -74,32 +122,43 @@ function migrate(store) {
 }
 
 function getLocalStore() {
+  const { storeFile } = resolveStorage();
   try {
-    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-    if (!fs.existsSync(LOCAL_STORE_FILE) && fs.existsSync(SEED_FILE)) {
-      fs.writeFileSync(LOCAL_STORE_FILE, fs.readFileSync(SEED_FILE, "utf-8"), "utf-8");
+    if (!fs.existsSync(storeFile) && fs.existsSync(SEED_FILE)) {
+      try {
+        fs.writeFileSync(storeFile, fs.readFileSync(SEED_FILE, "utf-8"), "utf-8");
+      } catch (seedErr) {}
     }
-    if (fs.existsSync(LOCAL_STORE_FILE)) {
-      const store = JSON.parse(fs.readFileSync(LOCAL_STORE_FILE, "utf-8"));
-      if (migrate(store)) saveLocalStore(store);
-      return store;
+    if (fs.existsSync(storeFile)) {
+      const parsed = JSON.parse(fs.readFileSync(storeFile, "utf-8"));
+      if (migrate(parsed)) saveLocalStore(parsed);
+      memoryStore = parsed;
+      return memoryStore;
     }
   } catch (err) {
-    console.error(`[Local Store Read Error] ${err.message}`);
+    console.warn(`[Local Store Read Warning] ${err.message}`);
   }
+
+  if (memoryStore && Array.isArray(memoryStore.users)) {
+    return memoryStore;
+  }
+
   const fresh = emptyStore();
+  memoryStore = fresh;
   saveLocalStore(fresh);
   return fresh;
 }
 
 function saveLocalStore(store) {
+  memoryStore = store;
+  const { dataDir, storeFile } = resolveStorage();
   try {
-    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-    const tmp = LOCAL_STORE_FILE + ".tmp";
+    if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+    const tmp = storeFile + ".tmp";
     fs.writeFileSync(tmp, JSON.stringify(store, null, 2), "utf-8");
-    fs.renameSync(tmp, LOCAL_STORE_FILE);
+    fs.renameSync(tmp, storeFile);
   } catch (err) {
-    console.error(`[Local Store Write Error] ${err.message}`);
+    console.error(`[Local Store Write Error] ${err.message}. Changes retained in memory.`);
   }
 }
 
@@ -113,12 +172,25 @@ const toCamel = (o) => (o && typeof o === "object" ? Object.fromEntries(Object.e
 const requireOwner = (ownerId) => { if (!ownerId) throw new Error("ownerId is required."); return String(ownerId); };
 const stripLegacy = (r) => { const c = { ...r }; LEGACY_RENEWAL_FIELDS.forEach((f) => delete c[f]); return c; };
 
+function normalizeUser(raw) {
+  if (!raw || typeof raw !== "object") return null;
+  const user = toCamel(raw);
+  const hash = user.passwordHash || user.password || "";
+  user.passwordHash = hash;
+  user.password = hash;
+  if (!user.mobile) user.mobile = "";
+  if (!user.avatar) user.avatar = null;
+  return user;
+}
+
 /* ------------------------------ database -------------------------------- */
 
 const db = {
+  getDataDirectory: () => resolveStorage().dataDir,
+  getStoreFilePath: () => resolveStorage().storeFile,
+  get UPLOAD_DIR() { return resolveStorage().uploadDir; },
   isLiveSupabase: () => isConfigured(),
   hashPassword,
-  UPLOAD_DIR,
 
   /* ----- renewals (always scoped to an owner) ----- */
   async getRenewals(ownerId) {
@@ -213,9 +285,10 @@ const db = {
 
   /* ----- document files (stored on disk, per-owner folder) ----- */
   filePath(ownerId, fileId) {
+    const { uploadDir } = resolveStorage();
     const safeOwner = String(ownerId).replace(/[^a-zA-Z0-9_-]/g, "_");
     const safeFile = String(fileId).replace(/[^a-zA-Z0-9_-]/g, "_");
-    return path.join(UPLOAD_DIR, safeOwner, safeFile);
+    return path.join(uploadDir, safeOwner, safeFile);
   },
   saveStoredFile(ownerId, buffer) {
     const fileId = `f-${Date.now()}-${crypto.randomBytes(6).toString("hex")}`;
@@ -317,10 +390,17 @@ const db = {
     if (isConfigured()) {
       try {
         const { data, error } = await supabase.from("app_users").select("*").eq("email", clean).maybeSingle();
-        if (!error && data) return toCamel(data);
-      } catch (e) {}
+        if (!error && data) return normalizeUser(data);
+        if (error && (error.code === "42P01" || (error.message && error.message.includes("does not exist")))) {
+          const resUsers = await supabase.from("users").select("*").eq("email", clean).maybeSingle();
+          if (!resUsers.error && resUsers.data) return normalizeUser(resUsers.data);
+        }
+      } catch (e) {
+        console.warn(`[Supabase getUserByEmail notice] ${e.message}`);
+      }
     }
-    return getLocalStore().users.find((u) => u.email === clean) || null;
+    const local = getLocalStore().users.find((u) => u.email === clean);
+    return local ? normalizeUser(local) : null;
   },
 
   async getUserById(id) {
@@ -329,28 +409,79 @@ const db = {
     if (isConfigured()) {
       try {
         const { data, error } = await supabase.from("app_users").select("*").eq("id", sid).maybeSingle();
-        if (!error && data) return toCamel(data);
-      } catch (e) {}
+        if (!error && data) return normalizeUser(data);
+        if (error && (error.code === "42P01" || (error.message && error.message.includes("does not exist")))) {
+          const resUsers = await supabase.from("users").select("*").eq("id", sid).maybeSingle();
+          if (!resUsers.error && resUsers.data) return normalizeUser(resUsers.data);
+        }
+      } catch (e) {
+        console.warn(`[Supabase getUserById notice] ${e.message}`);
+      }
     }
-    return getLocalStore().users.find((u) => String(u.id) === sid) || null;
+    const local = getLocalStore().users.find((u) => String(u.id) === sid);
+    return local ? normalizeUser(local) : null;
   },
 
   async saveUser(userData) {
     const id = userData.id || `usr-${Date.now()}-${crypto.randomBytes(3).toString("hex")}`;
     const email = (userData.email || "").trim().toLowerCase();
-    const record = { ...userData, id, email, updatedAt: new Date().toISOString() };
+    const pw = userData.password || userData.passwordHash;
+    const record = {
+      ...userData,
+      id,
+      email,
+      password: pw,
+      passwordHash: pw,
+      updatedAt: new Date().toISOString(),
+    };
     LEGACY_USER_FIELDS.forEach((f) => delete record[f]);
     if (!record.createdAt) record.createdAt = record.updatedAt;
+
     if (isConfigured()) {
-      try { await supabase.from("app_users").upsert(toSnake(record), { onConflict: "id" }); }
-      catch (e) { console.error(`[Supabase saveUser error] ${e.message}`); }
+      try {
+        const snakeRecord = toSnake(record);
+        let { error } = await supabase.from("app_users").upsert(snakeRecord, { onConflict: "id" });
+
+        // Handle possible column mismatch (e.g. only password or only password_hash in Supabase table)
+        if (error && error.message && (error.message.includes("column") || error.code === "42703")) {
+          console.warn(`[Supabase saveUser] Column mismatch (${error.message}). Retrying with sanitized payload...`);
+          // Try without password column
+          const p1 = { ...snakeRecord };
+          delete p1.password;
+          const res1 = await supabase.from("app_users").upsert(p1, { onConflict: "id" });
+          if (!res1.error) {
+            error = null;
+          } else {
+            // Try without password_hash column
+            const p2 = { ...snakeRecord };
+            delete p2.password_hash;
+            const res2 = await supabase.from("app_users").upsert(p2, { onConflict: "id" });
+            if (!res2.error) error = null;
+          }
+        }
+
+        // Handle possible table name difference
+        if (error && (error.code === "42P01" || (error.message && error.message.includes("does not exist")))) {
+          console.warn(`[Supabase saveUser] app_users table missing, attempting "users" table...`);
+          const resUsers = await supabase.from("users").upsert(snakeRecord, { onConflict: "id" });
+          if (!resUsers.error) error = null;
+        }
+
+        if (error) {
+          console.warn(`[Supabase saveUser Notice] Failed to save to Supabase: ${error.message} (code: ${error.code}). Persisting to verified local store.`);
+        }
+      } catch (e) {
+        console.warn(`[Supabase saveUser Exception] ${e.message}`);
+      }
     }
+
     const store = getLocalStore();
     const idx = store.users.findIndex((u) => u.id === id || u.email === email);
     if (idx >= 0) store.users[idx] = { ...store.users[idx], ...record };
     else store.users.push(record);
     saveLocalStore(store);
-    return record;
+
+    return normalizeUser(record);
   },
 
   async deleteUserAndData(ownerId) {
@@ -368,7 +499,7 @@ const db = {
     store.reminder_logs = store.reminder_logs.filter((l) => l.owner_id !== owner);
     delete store.user_settings[owner];
     saveLocalStore(store);
-    try { fs.rmSync(path.join(UPLOAD_DIR, owner.replace(/[^a-zA-Z0-9_-]/g, "_")), { recursive: true, force: true }); } catch (e) {}
+    try { fs.rmSync(path.join(resolveStorage().uploadDir, owner.replace(/[^a-zA-Z0-9_-]/g, "_")), { recursive: true, force: true }); } catch (e) {}
     return true;
   },
 

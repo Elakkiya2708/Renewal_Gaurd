@@ -79,6 +79,14 @@ router.post("/register", rateLimit(20, 15 * 60 * 1000), async (req, res) => {
 
     const hashed = hashPassword(password);
     const user = await db.saveUser({ fullName, email, mobile: String(req.body.mobile || "").trim(), password: hashed, passwordHash: hashed });
+
+    // Verify user persistence before reporting success
+    const verified = await db.getUserById(user.id);
+    if (!verified) {
+      console.error(`[Register Persistence Failure] User ${user.id} (${email}) could not be retrieved after saveUser.`);
+      return res.status(500).json({ ok: false, error: "Database error: Unable to store user record. Please try again." });
+    }
+
     res.status(201).json({ ok: true, token: generateToken(user), user: publicUser(user) });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });

@@ -13,6 +13,7 @@ const { exec } = require("child_process");
 const config = require("./backend/config");
 const { isConfigured: isSupabaseConnected } = require("./backend/supabaseClient");
 const reminderScheduler = require("./backend/reminderScheduler");
+const db = require("./backend/db");
 
 // Route imports
 const authRoutes = require("./backend/routes/auth");
@@ -137,7 +138,7 @@ app.get("/api/health", (req, res) => {
     uptimeSeconds: Math.floor(process.uptime()),
     supabaseConnected: isSupabaseConnected(),
     storageMode: isSupabaseConnected() ? "supabase_postgresql" : "json_store",
-    dataDirectory: process.env.DATA_DIR || "default",
+    dataDirectory: db.getDataDirectory(),
     emailProvider: config.EMAIL_PROVIDER,
     emailSendEnabled: config.EMAIL_SEND_ENABLED,
     smtpConfigured: Boolean(config.GMAIL_USER && config.GMAIL_APP_PASSWORD),
