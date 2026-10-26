@@ -139,19 +139,147 @@
 
           <!-- Application -->
           <div class="settings-panel card" id="panel-application">
-            <div class="card-header"><h3>Application Settings</h3></div>
+            <div class="card-header">
+              <h3>Application &amp; Workspace Settings</h3>
+              <p class="text-mid" style="font-size:13px;margin-top:4px;">Customize appearance, regional formatting, default renewal behaviors, and workspace data.</p>
+            </div>
+
+            <!-- Appearance Section -->
+            <div style="margin-top:16px;margin-bottom:6px;">
+              <span class="badge" style="background:var(--accent-subtle);color:var(--accent);font-weight:600;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;">Appearance &amp; Localization</span>
+            </div>
+
+            <!-- Theme -->
             <div class="setting-row">
               <div class="setting-row-text">
-                <strong>Theme</strong>
-                <span>Choose the colour theme for the whole app. The sidebar stays dark in every theme.</span>
+                <strong>Color Theme</strong>
+                <span>Choose the visual color scheme for the whole app. The sidebar stays dark in every theme.</span>
               </div>
               <select class="select-filter" id="themeSelect">
-                <option value="indigo">Indigo (light)</option>
-                <option value="indigo-dark">Indigo (dark)</option>
+                <option value="indigo">Indigo (Light)</option>
+                <option value="indigo-dark">Indigo (Dark)</option>
                 <option value="gold">Black &amp; Gold</option>
                 <option value="gold-light">Ivory &amp; Gold</option>
               </select>
             </div>
+
+            <!-- Language -->
+            <div class="setting-row">
+              <div class="setting-row-text">
+                <strong>System Language</strong>
+                <span>Interface language across navigation, tables, and buttons.</span>
+              </div>
+              <select class="select-filter" id="languageSelect">
+                <option value="en">English (US / Global)</option>
+                <option value="ta">தமிழ் (Tamil)</option>
+              </select>
+            </div>
+
+            <!-- Regional & Currency Section -->
+            <div style="margin-top:24px;margin-bottom:6px;">
+              <span class="badge" style="background:var(--accent-subtle);color:var(--accent);font-weight:600;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;">Regional &amp; Financial Formats</span>
+            </div>
+
+            <!-- Default Currency -->
+            <div class="setting-row">
+              <div class="setting-row-text">
+                <strong>Default Currency</strong>
+                <span>Currency symbol and ISO code applied to new renewals, spend reports, and forecasts.</span>
+              </div>
+              <select class="select-filter" id="currencySelect">
+                <option value="USD">USD ($) — US Dollar</option>
+                <option value="EUR">EUR (€) — Euro</option>
+                <option value="GBP">GBP (£) — British Pound</option>
+                <option value="INR">INR (₹) — Indian Rupee</option>
+                <option value="AUD">AUD (A$) — Australian Dollar</option>
+                <option value="CAD">CAD (C$) — Canadian Dollar</option>
+              </select>
+            </div>
+
+            <!-- Date Format -->
+            <div class="setting-row">
+              <div class="setting-row-text">
+                <strong>Date Display Format</strong>
+                <span>Format used for expiration dates, issue dates, and calendar horizons across all tables.</span>
+              </div>
+              <select class="select-filter" id="dateFormatSelect">
+                <option value="DD/MM/YYYY">DD/MM/YYYY (e.g. 26/10/2026)</option>
+                <option value="MM/DD/YYYY">MM/DD/YYYY (e.g. 10/26/2026)</option>
+                <option value="YYYY-MM-DD">YYYY-MM-DD (ISO 8601)</option>
+                <option value="MMM D, YYYY">MMM D, YYYY (e.g. Oct 26, 2026)</option>
+              </select>
+            </div>
+
+            <!-- Table & Data Density Section -->
+            <div style="margin-top:24px;margin-bottom:6px;">
+              <span class="badge" style="background:var(--accent-subtle);color:var(--accent);font-weight:600;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;">Records View &amp; Density</span>
+            </div>
+
+            <!-- Table Density -->
+            <div class="setting-row">
+              <div class="setting-row-text">
+                <strong>Table View Density</strong>
+                <span>Control row height and spacing across renewal records, history, and audit tables.</span>
+              </div>
+              <select class="select-filter" id="tableDensitySelect">
+                <option value="comfortable">Comfortable (Default spacing)</option>
+                <option value="compact">Compact (High density, more rows visible)</option>
+              </select>
+            </div>
+
+            <!-- Records Per Page -->
+            <div class="setting-row">
+              <div class="setting-row-text">
+                <strong>Default Records Per Page</strong>
+                <span>Number of renewal records displayed per page before pagination.</span>
+              </div>
+              <select class="select-filter" id="rowsPerPageSelect">
+                <option value="8">8 records</option>
+                <option value="15">15 records</option>
+                <option value="25">25 records</option>
+                <option value="50">50 records</option>
+              </select>
+            </div>
+
+            <!-- Default Renewal Cycle -->
+            <div class="setting-row">
+              <div class="setting-row-text">
+                <strong>Default Renewal Term</strong>
+                <span>Pre-selected recurring term when adding new contracts, subscriptions, or policies.</span>
+              </div>
+              <select class="select-filter" id="defaultCycleSelect">
+                <option value="Yearly">Yearly (Annual)</option>
+                <option value="Monthly">Monthly</option>
+                <option value="Quarterly">Quarterly (3 Months)</option>
+                <option value="Half-Yearly">Half-Yearly (6 Months)</option>
+                <option value="One-Time">One-Time / Non-recurring</option>
+              </select>
+            </div>
+
+            <!-- Data Backup & Export Section -->
+            <div style="margin-top:28px;padding:16px 20px;background:var(--bg-surface-2);border-radius:var(--r-md);border:1px solid var(--border);">
+              <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:12px;">
+                <div>
+                  <h4 style="font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px;margin:0 0 3px;">
+                    <i data-lucide="database" class="icon" style="color:var(--accent);"></i>
+                    Data Management &amp; Quick Backup
+                  </h4>
+                  <span style="font-size:12.5px;color:var(--text-mid);">Download an instant offline copy of all your renewals and schedules.</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                <button type="button" class="btn btn-secondary btn-sm" id="btnExportAllCsv">
+                  <i data-lucide="download" class="icon"></i> Export All to CSV
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btnExportAllJson">
+                  <i data-lucide="file-json" class="icon"></i> Full Backup (JSON)
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btnExportCalendarIcs">
+                  <i data-lucide="calendar" class="icon"></i> Export Calendar (.ics)
+                </button>
+              </div>
+            </div>
+
           </div>
 
           <!-- Reminders -->

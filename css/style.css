@@ -2713,6 +2713,32 @@ body.theme-indigo-dark table.data-table tbody tr:hover {
   font-size: 12.5px;
 }
 
+.setting-row select.select-filter {
+  min-width: 220px;
+  max-width: 290px;
+  flex-shrink: 0;
+}
+
+body.density-compact table.data-table td {
+  padding: 8px 12px;
+  font-size: 12.5px;
+}
+
+body.density-compact table.data-table th {
+  padding: 8px 12px;
+  font-size: 11px;
+}
+
+body.density-compact .badge {
+  padding: 2px 7px;
+  font-size: 11px;
+}
+
+body.density-compact .icon-btn {
+  width: 28px;
+  height: 28px;
+}
+
 .switch {
   position: relative;
   width: 42px;

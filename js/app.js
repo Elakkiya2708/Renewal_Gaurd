@@ -366,10 +366,19 @@
     if (!iso && iso !== 0) return "—";
     const d = parseSafeDate(iso);
     if (!d) return String(iso);
-    return d.toLocaleDateString(
-      "en-US",
-      opts || { month: "short", day: "numeric", year: "numeric" }
-    );
+    if (opts) {
+      return d.toLocaleDateString("en-US", opts);
+    }
+    const settings = typeof getSettings === "function" ? getSettings() : {};
+    const fmt = settings.dateFormat || "DD/MM/YYYY";
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    const monthNamesShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    if (fmt === "MM/DD/YYYY") return `${month}/${day}/${year}`;
+    if (fmt === "YYYY-MM-DD") return `${year}-${month}-${day}`;
+    if (fmt === "MMM D, YYYY") return `${monthNamesShort[d.getMonth()]} ${d.getDate()}, ${year}`;
+    return `${day}/${month}/${year}`;
   }
 
   function formatMonthYear(iso) {
@@ -382,8 +391,11 @@
   function formatCurrency(amount, currency) {
     if (amount === undefined || amount === null || amount === "") return "—";
     const num = Number(amount);
+    if (isNaN(num)) return "—";
+    const settings = typeof getSettings === "function" ? getSettings() : {};
+    currency = currency || settings.defaultCurrency || "USD";
     const symbols = { USD: "$", EUR: "€", GBP: "£", INR: "₹", AUD: "A$", CAD: "C$" };
-    const symbol = symbols[currency] || "";
+    const symbol = symbols[currency] || (currency ? currency + " " : "");
     return symbol + num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
@@ -1245,6 +1257,12 @@
   function getSettings() {
     return readJSON(STORAGE_KEYS.SETTINGS, {
       theme: "indigo",
+      language: "en",
+      defaultCurrency: "USD",
+      dateFormat: "DD/MM/YYYY",
+      tableDensity: "comfortable",
+      rowsPerPage: 8,
+      defaultCycle: "Yearly",
       reminderDays: [30, 15, 7],
       notifyEmail: true,
       notifyBrowser: true,
@@ -1267,6 +1285,14 @@
     theme = theme || "indigo";
     THEMES.forEach((t) => document.body.classList.remove("theme-" + t));
     if (THEMES.indexOf(theme) !== -1) document.body.classList.add("theme-" + theme);
+
+    // Apply Table Density
+    const settings = getSettings();
+    if (settings.tableDensity === "compact") {
+      document.body.classList.add("density-compact");
+    } else {
+      document.body.classList.remove("density-compact");
+    }
 
     // Logo / favicon / preview images follow the palette
     const gold = theme.indexOf("gold") === 0;

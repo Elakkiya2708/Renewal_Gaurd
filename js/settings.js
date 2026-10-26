@@ -175,6 +175,8 @@
 
   function loadApplicationSettings() {
     const settings = RTS.settings.getSettings();
+
+    // 1. Theme
     const select = document.getElementById("themeSelect");
     if (select) {
       select.value = settings.theme || "indigo";
@@ -184,14 +186,141 @@
       });
     }
 
+    // 2. Language
     const langSelect = document.getElementById("languageSelect");
     if (langSelect && RTS.i18n) {
-      langSelect.value = RTS.i18n.getLanguage();
+      langSelect.value = RTS.i18n.getLanguage ? RTS.i18n.getLanguage() : (settings.language || "en");
       langSelect.addEventListener("change", (e) => {
-        RTS.i18n.setLanguage(e.target.value);
+        if (RTS.i18n.setLanguage) {
+          RTS.i18n.setLanguage(e.target.value);
+        }
+        RTS.settings.setSettings({ language: e.target.value });
         RTS.toast(e.target.value === "ta" ? "மொழி தமிழாக மாற்றப்பட்டது." : "Language changed to English.", "success");
       });
     }
+
+    // 3. Default Currency
+    const curSelect = document.getElementById("currencySelect");
+    if (curSelect) {
+      curSelect.value = settings.defaultCurrency || "USD";
+      curSelect.addEventListener("change", (e) => {
+        RTS.settings.setSettings({ defaultCurrency: e.target.value });
+        RTS.toast("Default currency updated to " + e.target.value + ".", "success");
+      });
+    }
+
+    // 4. Date Format
+    const dateFmtSelect = document.getElementById("dateFormatSelect");
+    if (dateFmtSelect) {
+      dateFmtSelect.value = settings.dateFormat || "DD/MM/YYYY";
+      dateFmtSelect.addEventListener("change", (e) => {
+        RTS.settings.setSettings({ dateFormat: e.target.value });
+        RTS.toast("Date display format updated to " + e.target.value + ".", "success");
+      });
+    }
+
+    // 5. Table Density
+    const densitySelect = document.getElementById("tableDensitySelect");
+    if (densitySelect) {
+      densitySelect.value = settings.tableDensity || "comfortable";
+      densitySelect.addEventListener("change", (e) => {
+        RTS.settings.setSettings({ tableDensity: e.target.value });
+        if (e.target.value === "compact") {
+          document.body.classList.add("density-compact");
+        } else {
+          document.body.classList.remove("density-compact");
+        }
+        RTS.toast("Table view density updated to " + e.target.value + ".", "success");
+      });
+    }
+
+    // 6. Rows Per Page
+    const rowsSelect = document.getElementById("rowsPerPageSelect");
+    if (rowsSelect) {
+      rowsSelect.value = String(settings.rowsPerPage || 8);
+      rowsSelect.addEventListener("change", (e) => {
+        const val = parseInt(e.target.value, 10) || 8;
+        RTS.settings.setSettings({ rowsPerPage: val });
+        RTS.toast("Default records per page set to " + val + ".", "success");
+      });
+    }
+
+    // 7. Default Renewal Cycle
+    const cycleSelect = document.getElementById("defaultCycleSelect");
+    if (cycleSelect) {
+      cycleSelect.value = settings.defaultCycle || "Yearly";
+      cycleSelect.addEventListener("change", (e) => {
+        RTS.settings.setSettings({ defaultCycle: e.target.value });
+        RTS.toast("Default renewal term set to " + e.target.value + ".", "success");
+      });
+    }
+
+    // 8. Data Management & Quick Backup actions
+    const btnCsv = document.getElementById("btnExportAllCsv");
+    if (btnCsv) {
+      btnCsv.addEventListener("click", () => {
+        const renewals = RTS.data.getRenewals();
+        if (!renewals.length) {
+          RTS.toast("No renewal records found to export.", "info");
+          return;
+        }
+        const columns = [
+          { label: "Record ID", value: "code" },
+          { label: "Name", value: "name" },
+          { label: "Category", value: "category" },
+          { label: "Organization", value: "organization" },
+          { label: "Issue Date", value: "issueDate" },
+          { label: "Expiry Date", value: "expiryDate" },
+          { label: "Cost", value: "cost" },
+          { label: "Currency", value: "currency" },
+          { label: "Recurring Cycle", value: (r) => r.recurringCycle || "Yearly" },
+          { label: "Priority", value: "priority" },
+          { label: "Status", value: (r) => RTS.computeStatus(r) },
+          { label: "Reference Number", value: "referenceNumber" },
+          { label: "Notes", value: "notes" },
+        ];
+        RTS.exportCSV("RenewGaurd_All_Renewals_" + RTS.todayISO() + ".csv", renewals, columns);
+        RTS.toast(`Exported all ${renewals.length} record(s) to CSV.`, "success");
+      });
+    }
+
+    const btnJson = document.getElementById("btnExportAllJson");
+    if (btnJson) {
+      btnJson.addEventListener("click", () => {
+        const payload = {
+          exportDate: new Date().toISOString(),
+          version: "1.0.0",
+          user: RTS.auth.getCurrentUser(),
+          settings: RTS.settings.getSettings(),
+          renewals: RTS.data.getRenewals(),
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "RenewGaurd_Backup_" + RTS.todayISO() + ".json";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        RTS.toast("Full JSON backup downloaded successfully.", "success");
+      });
+    }
+
+    const btnIcs = document.getElementById("btnExportCalendarIcs");
+    if (btnIcs) {
+      btnIcs.addEventListener("click", () => {
+        const renewals = RTS.data.getRenewals();
+        if (!renewals.length) {
+          RTS.toast("No renewals to export to calendar.", "info");
+          return;
+        }
+        RTS.exportICS("RenewGaurd_Schedule_" + RTS.todayISO() + ".ics", renewals);
+        RTS.toast(`Exported ${renewals.length} record(s) to iCalendar schedule.`, "success");
+      });
+    }
+
+    RTS.refreshIcons();
   }
 
   function loadReminderSettings() {

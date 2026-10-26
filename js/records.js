@@ -51,8 +51,10 @@
     const currencyInput = document.getElementById("in_currency");
     if (currencyInput) {
       currencyInput.innerHTML = "";
+      const userSettings = (RTS.settings && RTS.settings.getSettings()) || {};
+      const defCur = userSettings.defaultCurrency || "USD";
       RTS.CURRENCIES.forEach((c) => {
-        currencyInput.insertAdjacentHTML("beforeend", `<option value="${c}">${c}</option>`);
+        currencyInput.insertAdjacentHTML("beforeend", `<option value="${c}" ${c === defCur ? "selected" : ""}>${c}</option>`);
       });
     }
 
@@ -110,10 +112,12 @@
   function renderTable() {
     const all = getFilteredSorted();
     const total = all.length;
-    const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    const userSettings = (RTS.settings && RTS.settings.getSettings()) || {};
+    const effectivePageSize = userSettings.rowsPerPage || PAGE_SIZE;
+    const totalPages = Math.max(1, Math.ceil(total / effectivePageSize));
     state.page = Math.min(state.page, totalPages);
-    const start = (state.page - 1) * PAGE_SIZE;
-    const pageItems = all.slice(start, start + PAGE_SIZE);
+    const start = (state.page - 1) * effectivePageSize;
+    const pageItems = all.slice(start, start + effectivePageSize);
 
     const resultCountEl = document.getElementById("resultCount");
     if (resultCountEl) {
@@ -210,9 +214,10 @@
   function resetForm() {
     document.getElementById("renewalForm").reset();
     document.getElementById("in_priority").value = "Medium";
-    document.getElementById("in_currency").value = "USD";
+    const userSettings = (RTS.settings && RTS.settings.getSettings()) || {};
+    document.getElementById("in_currency").value = userSettings.defaultCurrency || "USD";
     const cycleInput = document.getElementById("in_recurringCycle");
-    if (cycleInput) cycleInput.value = "Yearly";
+    if (cycleInput) cycleInput.value = userSettings.defaultCycle || "Yearly";
     clearFieldErrors();
     pendingDocs = [];
     renderUploadList();
