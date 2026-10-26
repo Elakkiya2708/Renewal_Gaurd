@@ -12,7 +12,7 @@ services:
       - key: PORT
         value: 10000
       - key: BACKEND_URL
-        value: https://renewal-gaurd-backend.onrender.com
+        value: https://renewal-gaurd-backend-qnmv.onrender.com
       - key: APP_URL
         sync: false # Set to your production Vercel frontend URL (e.g. https://renewalgaurd.vercel.app)
       - key: ALLOWED_ORIGINS

@@ -527,7 +527,7 @@
       const isLocal = host === "localhost" || host === "127.0.0.1" || host === "";
       const isBackendHost = host.includes("onrender.com");
       if (!isLocal && !isBackendHost && (host.endsWith(".vercel.app") || host.includes("vercel"))) {
-        runtimeBase = "https://renewal-gaurd-backend.onrender.com";
+        runtimeBase = "https://renewal-gaurd-backend-qnmv.onrender.com";
       }
     }
 

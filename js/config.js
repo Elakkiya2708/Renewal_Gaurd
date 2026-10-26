@@ -5,7 +5,7 @@
    hosted separately (e.g. on Vercel) from the backend (on Render).
 
    PRODUCTION BACKEND:
-     https://renewal-gaurd-backend.onrender.com
+     https://renewal-gaurd-backend-qnmv.onrender.com
 
    ENVIRONMENT DETECTION:
      - When running locally (localhost, 127.0.0.1, or file://):
@@ -13,10 +13,10 @@
        against local Express server http://localhost:3000), preserving local
        development without breaking.
      - When running in production (e.g. on *.vercel.app or custom domain):
-       API_URL automatically defaults to "https://renewal-gaurd-backend.onrender.com".
+       API_URL automatically defaults to "https://renewal-gaurd-backend-qnmv.onrender.com".
      - In addition, vercel.json rewrites /api/* calls to Render as a secondary proxy layer.
      - You can override the URL anytime via:
-       localStorage.setItem("rts_api_url", "https://renewal-gaurd-backend.onrender.com");
+       localStorage.setItem("rts_api_url", "https://renewal-gaurd-backend-qnmv.onrender.com");
    ========================================================================== */
 
 (function () {
@@ -28,7 +28,7 @@
       window.location.protocol === "file:");
 
   // Production Render Backend URL
-  const PRODUCTION_BACKEND_URL = "https://renewal-gaurd-backend.onrender.com";
+  const PRODUCTION_BACKEND_URL = "https://renewal-gaurd-backend-qnmv.onrender.com";
 
   window.RTS_CONFIG = window.RTS_CONFIG || {};
 
@@ -36,7 +36,7 @@
   if (typeof localStorage !== "undefined") {
     try {
       const cached = localStorage.getItem("rts_api_url");
-      if (cached && (cached.includes("renewgaurd-tyvw") || cached.includes("change-me"))) {
+      if (cached && (cached.includes("renewgaurd-tyvw") || cached.includes("change-me") || (cached.includes("renewal-gaurd-backend.onrender.com") && !cached.includes("qnmv")))) {
         localStorage.removeItem("rts_api_url");
       }
     } catch (_) {}
