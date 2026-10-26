@@ -15,7 +15,7 @@
 ┌───────────────────────────────┐               ┌───────────────────────────────┐
 │        Vercel Frontend        │               │         Render Backend        │
 │    (Static HTML/CSS/JS)       │               │       (Express.js API)        │
-│  https://renew-gaurd.vercel.app│               │https://renewgaurd-tyvw.onrender.com│
+│  https://renew-gaurd.vercel.app│               │https://renewal-gaurd-backend.onrender.com│
 └───────────────┬───────────────┘               └───────────────┬───────────────┘
                 │                                               │
                 │ Rewrites /api/* to Render                     │
@@ -91,7 +91,7 @@
 | `CRON_SCHEDULE` | `0 8 * * *` | Daily alert cron at 08:00 AM |
 
 7. Click **Create Web Service**.
-8. Note your public backend URL: `https://renewgaurd-tyvw.onrender.com`.
+8. Note your public backend URL: `https://renewal-gaurd-backend.onrender.com`.
 
 ---
 
@@ -136,7 +136,7 @@ Render Web Services use ephemeral filesystems by default. RenewGaurd ensures **z
      "rewrites": [
        {
          "source": "/api/:path*",
-         "destination": "https://renewgaurd-tyvw.onrender.com/api/:path*"
+         "destination": "https://renewal-gaurd-backend.onrender.com/api/:path*"
        }
      ]
    }
@@ -146,7 +146,7 @@ Render Web Services use ephemeral filesystems by default. RenewGaurd ensures **z
 9. Direct cross-origin API calls are also pre-configured in [`js/config.js`](./js/config.js) to:
    ```javascript
    window.RTS_CONFIG = {
-     API_URL: "https://renewgaurd-tyvw.onrender.com",
+     API_URL: "https://renewal-gaurd-backend.onrender.com",
    };
    ```
 
@@ -174,7 +174,7 @@ To enable automated email alerts and invitations without any cost:
 Once both services are deployed, verify the complete pipeline:
 
 1. **Backend Health Check**:
-   - Open `https://renewgaurd-tyvw.onrender.com/api/health`
+   - Open `https://renewal-gaurd-backend.onrender.com/api/health`
    - Response should return:
      ```json
      {

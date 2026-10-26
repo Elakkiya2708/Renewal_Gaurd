@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: renewgaurd-tyvw
+    name: renewal-gaurd-backend
     runtime: node
     plan: starter # Starter plan supports persistent disk. For free tier without disk, configure Supabase credentials below.
     buildCommand: npm install
@@ -12,7 +12,7 @@ services:
       - key: PORT
         value: 10000
       - key: BACKEND_URL
-        value: https://renewgaurd-tyvw.onrender.com
+        value: https://renewal-gaurd-backend.onrender.com
       - key: APP_URL
         sync: false # Set to your production Vercel frontend URL (e.g. https://renew-gaurd.vercel.app)
       - key: ALLOWED_ORIGINS

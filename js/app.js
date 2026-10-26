@@ -513,13 +513,21 @@
       window.RTS_API_URL ||
       (typeof localStorage !== "undefined" ? localStorage.getItem("rts_api_url") : null);
 
+    // If an old decommissioned backend URL is cached in localStorage, clear it
+    if (runtimeBase && typeof runtimeBase === "string" && (runtimeBase.includes("renewgaurd-tyvw") || runtimeBase.includes("change-me"))) {
+      if (typeof localStorage !== "undefined") {
+        try { localStorage.removeItem("rts_api_url"); } catch (_) {}
+      }
+      runtimeBase = (window.RTS_CONFIG && window.RTS_CONFIG.API_URL) || null;
+    }
+
     // Automatic fallback if deployed on Vercel without custom config
     if (!runtimeBase && typeof window !== "undefined" && window.location && window.location.hostname) {
       const host = window.location.hostname;
       const isLocal = host === "localhost" || host === "127.0.0.1" || host === "";
       const isBackendHost = host.includes("onrender.com");
       if (!isLocal && !isBackendHost && (host.endsWith(".vercel.app") || host.includes("vercel"))) {
-        runtimeBase = "https://renewgaurd-tyvw.onrender.com";
+        runtimeBase = "https://renewal-gaurd-backend.onrender.com";
       }
     }
 
