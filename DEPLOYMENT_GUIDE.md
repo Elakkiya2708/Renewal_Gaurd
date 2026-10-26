@@ -15,7 +15,7 @@
 ┌───────────────────────────────┐               ┌───────────────────────────────┐
 │        Vercel Frontend        │               │         Render Backend        │
 │    (Static HTML/CSS/JS)       │               │       (Express.js API)        │
-│  https://renew-gaurd.vercel.app│               │https://renewal-gaurd-backend.onrender.com│
+│  https://renewalgaurd.vercel.app│               │https://renewal-gaurd-backend.onrender.com│
 └───────────────┬───────────────┘               └───────────────┬───────────────┘
                 │                                               │
                 │ Rewrites /api/* to Render                     │
@@ -47,8 +47,8 @@
 6. Under **Environment Variables**, fill in your secret values:
    - `GMAIL_USER`: `elakkiya270806@gmail.com` (or your sending Gmail)
    - `GMAIL_APP_PASSWORD`: Your 16-character Google App Password (without spaces)
-   - `APP_URL`: `https://renew-gaurd.vercel.app`
-   - `ALLOWED_ORIGINS`: `https://renew-gaurd.vercel.app`
+   - `APP_URL`: `https://renewalgaurd.vercel.app`
+   - `ALLOWED_ORIGINS`: `https://renewalgaurd.vercel.app`
 7. Click **Apply**.
 8. Render will provision the Web Service, attach the 1GB persistent disk at `/var/data`, and start the server.
 
@@ -76,8 +76,8 @@
 | `NODE_ENV` | `production` | Production mode |
 | `PORT` | `10000` | Port automatically assigned by Render |
 | `DATA_DIR` | `/var/data` | Points to persistent disk mount |
-| `APP_URL` | `https://renew-gaurd.vercel.app` | Your live Vercel frontend URL |
-| `ALLOWED_ORIGINS` | `https://renew-gaurd.vercel.app` | Allowed CORS origin |
+| `APP_URL` | `https://renewalgaurd.vercel.app` | Your live Vercel frontend URL |
+| `ALLOWED_ORIGINS` | `https://renewalgaurd.vercel.app` | Allowed CORS origin |
 | `ALLOW_VERCEL_PREVIEWS` | `true` | Allows Vercel preview URLs |
 | `JWT_SECRET` | *(Click "Generate")* | Strong random string |
 | `EMAIL_PROVIDER` | `nodemailer` | Real email delivery engine |
@@ -142,7 +142,7 @@ Render Web Services use ephemeral filesystems by default. RenewGaurd ensures **z
    }
    ```
 7. Click **Deploy**.
-8. Vercel will deploy your static frontend in seconds: [`https://renew-gaurd.vercel.app`](https://renew-gaurd.vercel.app).
+8. Vercel will deploy your static frontend in seconds: [`https://renewalgaurd.vercel.app`](https://renewalgaurd.vercel.app).
 9. Direct cross-origin API calls are also pre-configured in [`js/config.js`](./js/config.js) to:
    ```javascript
    window.RTS_CONFIG = {
@@ -185,10 +185,10 @@ Once both services are deployed, verify the complete pipeline:
      }
      ```
 2. **Frontend Loading**:
-   - Open your Vercel URL: `https://renew-gaurd.vercel.app`
+   - Open your Vercel URL: `https://renewalgaurd.vercel.app`
    - Verify landing page, styles, and Lucide icons render cleanly.
 3. **Admin Sign In**:
-   - Go to `https://renew-gaurd.vercel.app/login.html`
+   - Go to `https://renewalgaurd.vercel.app/login.html`
    - Register a test account and sign in
    - Dashboard loads with navigation and metrics.
 4. **Privacy check**:
